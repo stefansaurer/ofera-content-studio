@@ -1,8 +1,8 @@
 # OFERA Content Studio
 
-Lokales Tool zum Schreiben und Exportieren von reich formatierten Inhalten für Shopify — Blogartikel, Produktbeschreibungen und Collection-Bodies.
+Browserbasiertes Tool zum Schreiben und Exportieren von reich formatierten Inhalten für Shopify — Blogartikel, Produktbeschreibungen und Collection-Bodies.
 
-Kein Server, kein Framework. Alles läuft lokal im Browser.
+Das Studio läuft heute über HTTPS und kann bei Bedarf weiterhin auch direkt lokal geöffnet werden. Kein Framework, kein Backend.
 
 ---
 
@@ -23,7 +23,9 @@ Für Produktbeschreibungen und Collections: gleiche CSS-Zeile in `sections/main-
 ## Täglicher Workflow
 
 ### 1. Studio öffnen
-`content-studio.html` im Browser öffnen (Doppelklick reicht).
+Studio über die bereitgestellte HTTPS-URL öffnen.
+
+Optional für lokale Entwicklung: `content-studio.html` direkt im Browser öffnen.
 
 ### 2. Artikel schreiben
 - Direkt im Editor tippen, oder
@@ -36,7 +38,7 @@ Für Produktbeschreibungen und Collections: gleiche CSS-Zeile in `sections/main-
 **Meta & SEO**-Panel aufklappen → Titel, Beschreibung, URL-Handle, Fokus-Keyword eintragen.
 
 ### 4. Als .txt speichern
-**Speichern**-Button → Datei landet im Download-Ordner → in `content/` ablegen.
+**Speichern**-Button → Datei speichern und anschließend in `content/` ablegen, wenn sie versioniert weitergeführt werden soll.
 Die `.txt` ist deine SSOT — hier wird weitergearbeitet, nicht im exportierten HTML.
 
 ### 5. Für Shopify exportieren
@@ -95,7 +97,7 @@ Danach: übersetzte `.txt` in `content/` speichern (z.B. `artikel-en.txt`), `url
 ## Dateistruktur
 
 ```
-content-studio.html          — Die App (im Browser öffnen)
+content-studio.html          — Die Studio-App (gehostet oder lokal nutzbar)
 ofera-components.css         — CSS für alle Komponenten (Shopify-Asset)
 content/
   _komponenten-referenz.txt  — Alle Komponenten als Beispiel

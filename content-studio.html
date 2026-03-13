@@ -1337,7 +1337,7 @@ function renderVideo(attrs) {
   const id = ytId(attrs.url||'');
   let embed;
   if (id) {
-    // Preview uses placeholder (file:// blocks YouTube). Export uses real iframe.
+    // Preview intentionally uses a placeholder. Export uses the real iframe.
     embed = `<div class="yt-placeholder" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;gap:6px;">
       <div style="font-size:40px;opacity:0.8;">▶</div>
       <div style="font-size:13px;opacity:0.6;">YouTube Vorschau — erscheint auf Shopify</div>
@@ -2588,7 +2588,7 @@ async function doSaveSource() {
   const filename = `${slug}-${lang}.txt`;
   const full = buildFrontmatter() + content;
 
-  // Native "Speichern unter" Dialog (Chrome/Edge) – nur bei http/https verfügbar, nicht file://
+  // Native "Speichern unter" Dialog (Chrome/Edge) – nur in secure contexts wie http/https verfügbar
   const isSecureContext = window.location.protocol === 'https:' || window.location.protocol === 'http:';
   if (window.showSaveFilePicker && isSecureContext) {
     try {
