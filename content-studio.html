@@ -1,0 +1,2840 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OFERA Content Studio</title>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="stylesheet" href="ofera-components.css">
+<style>
+
+/* =========================================================
+   STUDIO UI
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ui-green:       #094B20;
+  --ui-green-light: #f0f5f1;
+  --ui-border:      #e2e8f0;
+  --ui-text:        #1a202c;
+  --ui-muted:       #718096;
+  --ui-bg:          #f8f9fa;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--ui-bg);
+  color: var(--ui-text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* --- Header --- */
+.studio-header {
+  background: white;
+  border-bottom: 1px solid var(--ui-border);
+  padding: 9px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+.studio-logo {
+  display: flex; align-items: center; gap: 12px; min-width: 0;
+}
+.studio-logo img { height: 28px; width: auto; display: block; flex-shrink: 0; }
+.studio-logo-divider {
+  width: 1px; height: 20px; background: var(--ui-border); flex-shrink: 0;
+}
+.studio-logo-label {
+  font-size: 12px; font-weight: 600; color: var(--ui-muted); letter-spacing: 0.2px; flex-shrink: 0;
+}
+.studio-article-title {
+  font-size: 13px; font-weight: 600; color: var(--ui-text);
+  max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding-left: 2px;
+}
+.studio-article-title.empty { color: var(--ui-muted); font-weight: 400; font-style: italic; }
+.header-actions { display: flex; gap: 6px; align-items: center; flex-shrink: 0; }
+.btn-export {
+  background: var(--ui-green); color: white; border: none;
+  padding: 7px 16px; border-radius: 7px; font-weight: 700; font-size: 12px;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.btn-export:hover { opacity: 0.88; }
+.btn-secondary {
+  background: white; color: var(--ui-text);
+  border: 1px solid var(--ui-border);
+  padding: 6px 12px; border-radius: 7px; font-size: 12px; cursor: pointer; transition: all 0.15s;
+}
+.btn-secondary:hover { background: var(--ui-green-light); border-color: var(--ui-green); color: var(--ui-green); }
+.btn-secondary.btn-primary-action {
+  background: #f0f5f1; color: var(--ui-green); border-color: #c8dece; font-weight: 600;
+}
+.btn-secondary.btn-primary-action:hover { background: var(--ui-green-light); }
+
+/* --- Toolbar --- */
+.studio-toolbar {
+  background: white;
+  border-bottom: 1px solid var(--ui-border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+.toolbar-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 5px 14px;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+}
+.toolbar-row:first-child {
+  border-bottom: 1px solid var(--ui-border);
+}
+.toolbar-label {
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+  color: var(--ui-muted); margin-right: 4px; white-space: nowrap;
+}
+.toolbar-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 11px; border-radius: 6px;
+  border: 1px solid var(--ui-border); background: white;
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  white-space: nowrap; transition: all 0.15s; color: var(--ui-text);
+}
+.toolbar-btn:hover { background: var(--ui-green-light); border-color: var(--ui-green); color: var(--ui-green); }
+.toolbar-btn .icon { font-size: 13px; }
+.toolbar-btn svg { width: 14px; height: 14px; flex-shrink: 0; stroke-width: 2; }
+.toolbar-sep { width: 1px; height: 22px; background: var(--ui-border); margin: 0 3px; }
+
+/* --- Main layout --- */
+.studio-main { display: flex; flex: 1; overflow: hidden; min-height: 0; }
+
+/* Editor pane */
+.pane-editor { flex: 1; display: flex; flex-direction: column; border-right: 1px solid var(--ui-border); min-width: 0; min-height: 0; }
+.pane-header {
+  padding: 7px 16px; background: white; border-bottom: 1px solid var(--ui-border);
+  font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--ui-muted);
+  display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+.editor-gutter-wrap {
+  flex: 1; display: flex; min-height: 0; overflow: hidden;
+}
+.editor-gutter {
+  flex-shrink: 0; width: 6px; background: #1e1e2e;
+}
+.editor-textarea {
+  flex: 1; min-height: 0; border: none; outline: none; resize: none;
+  font-family: 'Monaco', 'Menlo', 'Fira Code', 'Courier New', monospace;
+  font-size: 12.5px; line-height: 1.75; padding: 20px; padding-bottom: 40vh;
+  background: #1e1e2e; color: #cdd6f4; overflow-y: auto; tab-size: 2;
+}
+.editor-textarea::placeholder { color: #45475a; }
+
+/* Preview pane */
+.pane-preview { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: white; }
+.preview-body { flex: 1; overflow-y: auto; padding: 40px 48px; }
+
+/* Simulate Shopify .rte article context */
+.article-preview {
+  max-width: 680px; margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px; line-height: 1.75; color: #1c1d1d;
+}
+.article-preview h1 { font-size: 28px; font-weight: 800; margin: 0 0 20px; }
+.article-preview h2 { font-size: 21px; font-weight: 700; margin: 32px 0 12px; color: #1c1d1d; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+.article-preview h3 { font-size: 17px; font-weight: 600; margin: 24px 0 10px; }
+.article-preview p  { margin-bottom: 16px; }
+.article-preview ul, .article-preview ol { margin: 0 0 16px 22px; }
+.article-preview li { margin-bottom: 4px; }
+.article-preview a  { color: #094B20; }
+.article-preview strong { font-weight: 700; }
+.article-preview em { font-style: italic; }
+.article-preview s { text-decoration: line-through; color: #888; }
+.article-preview hr { border: none; border-top: 1px solid #e4e4e4; margin: 32px 0; }
+.article-preview .preview-empty {
+  color: #aaa; font-style: italic; text-align: center;
+  padding-top: 80px; font-size: 14px;
+}
+
+/* =========================================================
+   MODALS
+   ========================================================= */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: white; border-radius: 16px; padding: 26px 28px;
+  width: 580px; max-width: 96vw; max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+}
+.modal.modal-wide {
+  width: min(92vw, 860px);
+}
+.tbl-grid-wrap { overflow-x: auto; }
+.tbl-grid { display: grid; gap: 4px; }
+.tbl-grid input {
+  width: 100%; padding: 6px 8px; border: 1px solid #e2e8f0;
+  border-radius: 5px; font-size: 12px; box-sizing: border-box; outline: none;
+}
+.tbl-grid input:focus { border-color: #094B20; }
+.tbl-grid input.tbl-header {
+  background: #f0f5f1; border-color: #c8dece;
+  font-weight: 700; color: #094B20;
+}
+.tbl-grid input.tbl-header:focus { border-color: #094B20; }
+.tbl-row-num {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #aaa; font-weight: 600;
+}
+.modal-title {
+  font-size: 16px; font-weight: 800; margin-bottom: 20px;
+  color: var(--ui-green); display: flex; align-items: center; gap: 8px;
+}
+.modal-title svg { width: 18px; height: 18px; flex-shrink: 0; }
+.tier-section {
+  border-top: 1px solid var(--ui-border);
+  padding-top: 12px; margin-top: 12px;
+}
+.tier-section-label {
+  font-size: 11px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--ui-green); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.tier-hl-badge {
+  font-size: 10px; background: var(--ui-green); color: #fff;
+  padding: 2px 7px; border-radius: 3px; font-weight: 700;
+  letter-spacing: 0;
+}
+.form-row { margin-bottom: 13px; }
+.form-row label {
+  display: block; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px; color: var(--ui-muted); margin-bottom: 4px;
+}
+.form-row label .opt { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; color: #bbb; }
+.form-row input, .form-row select, .form-row textarea {
+  width: 100%; padding: 8px 11px; border: 1px solid var(--ui-border);
+  border-radius: 7px; font-size: 13px; outline: none; font-family: inherit; transition: border-color 0.15s;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus { border-color: var(--ui-green); }
+.form-row textarea { height: 75px; resize: vertical; }
+.form-row .hint { font-size: 11px; color: #b0b0b0; margin-top: 4px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions {
+  display: flex; justify-content: flex-end; gap: 10px;
+  margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--ui-border);
+}
+.btn-cancel {
+  padding: 8px 16px; border-radius: 7px; border: 1px solid var(--ui-border);
+  background: white; font-size: 13px; cursor: pointer; color: var(--ui-muted);
+}
+.btn-insert {
+  padding: 8px 20px; border-radius: 7px; border: none;
+  background: var(--ui-green); color: white; font-size: 13px;
+  font-weight: 700; cursor: pointer; transition: opacity 0.15s;
+}
+.btn-insert:hover { opacity: 0.88; }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.copy-toast {
+  display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: #1a202c; color: white; padding: 11px 24px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; z-index: 2000; box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+.copy-toast.show { display: block; animation: fadeUp 0.25s ease; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Komponentenstyles werden aus ofera-components.css geladen (siehe <link> im <head>) */
+
+/* =========================================================
+   META & SEO PANEL
+   ========================================================= */
+.meta-panel {
+  background: #fff;
+  border-bottom: 1px solid var(--ui-border);
+  overflow: hidden;
+  max-height: 0;
+  flex-shrink: 0;
+  transition: max-height 0.25s ease;
+}
+.meta-panel.open {
+  max-height: 600px;
+}
+.meta-panel-inner {
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+}
+.meta-col { display: flex; flex-direction: column; gap: 10px; }
+
+.meta-field { display: flex; flex-direction: column; gap: 4px; }
+.meta-field label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #64748b;
+}
+.meta-field input,
+.meta-field textarea {
+  font-size: 13px; padding: 7px 10px;
+  border: 1px solid var(--ui-border); border-radius: 6px;
+  background: #fafafa; color: var(--ui-text);
+  font-family: inherit; resize: none; outline: none;
+  transition: border-color 0.15s;
+}
+.meta-field input:focus,
+.meta-field textarea:focus { border-color: var(--ui-green); background: #fff; }
+.meta-field textarea { height: 54px; }
+
+.char-counter {
+  font-size: 11px; text-align: right; margin-top: 2px;
+  color: #94a3b8; transition: color 0.15s;
+}
+.char-counter.warn  { color: #d97706; }
+.char-counter.over  { color: #ef4444; }
+.char-counter.good  { color: #16a34a; }
+
+/* SEO column */
+.seo-section-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.07em; color: #64748b; margin-bottom: 2px;
+}
+.seo-checks { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.seo-check {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--ui-text);
+}
+.seo-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  flex-shrink: 0; background: #d1d5db;
+  transition: background 0.2s;
+}
+.seo-dot.green  { background: #16a34a; }
+.seo-dot.yellow { background: #d97706; }
+.seo-dot.red    { background: #ef4444; }
+.seo-check-label { flex: 1; }
+.seo-check-val { font-size: 11px; color: #94a3b8; }
+
+.btn-meta {
+  padding: 0 14px; height: 32px; border-radius: 7px;
+  border: 1px solid var(--ui-border); background: white;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  color: var(--ui-text); display: inline-flex; align-items: center; gap: 6px;
+  transition: all 0.15s; white-space: nowrap;
+}
+.btn-meta:hover,
+.btn-meta.active { background: var(--ui-green-light); border-color: var(--ui-green); color: var(--ui-green); }
+.btn-meta svg { width: 13px; height: 13px; }
+
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header class="studio-header">
+  <div class="studio-logo">
+    <img src="https://ofera.at/cdn/shop/files/Logo_quer.png?v=1640631301&width=280" alt="OFERA">
+    <div class="studio-logo-divider"></div>
+    <span class="studio-logo-label">Content Studio</span>
+    <div class="studio-logo-divider"></div>
+    <span id="studio-article-title" class="studio-article-title empty">Kein Titel</span>
+  </div>
+  <div class="header-actions">
+    <button class="btn-meta" id="btn-meta-toggle" onclick="toggleMetaPanel()"><i data-lucide="settings-2"></i> Meta & SEO</button>
+    <div class="toolbar-sep" style="margin:0 4px;"></div>
+    <button class="btn-secondary" onclick="loadSource()" title="Gespeicherte .txt Quelle importieren">📥 Importieren</button>
+    <button class="btn-secondary" onclick="openSaveModal()" title="Shortcode-Quelle als .txt exportieren">📤 Exportieren</button>
+    <div class="toolbar-sep" style="margin:0 4px;"></div>
+    <button class="btn-secondary" onclick="clearEditor()">Leeren</button>
+    <div class="toolbar-sep" style="margin:0 4px;"></div>
+    <button class="btn-export" onclick="exportHTMLOnly()" title="HTML kopieren – benötigt ofera-components.css als Shopify-Asset">⬆ Export HTML for Shopify</button>
+  </div>
+</header>
+
+<!-- ===================== META & SEO PANEL ===================== -->
+<div class="meta-panel" id="meta-panel">
+  <div class="meta-panel-inner">
+
+    <!-- Linke Spalte: Metadaten -->
+    <div class="meta-col">
+      <div class="meta-field">
+        <label>H1 / Seitentitel</label>
+        <input id="meta-title-h1" type="text" placeholder="Mehlwürmer züchten – komplette Anleitung" oninput="updateSEO(); updateArticleTitle()">
+      </div>
+      <div class="meta-field">
+        <label>Excerpt / Kurzbeschreibung</label>
+        <textarea id="meta-excerpt" placeholder="Kurze Zusammenfassung des Inhalts für interne Zwecke…" oninput="updateSEO()"></textarea>
+      </div>
+      <div class="meta-field">
+        <label>Meta Page Title <span style="font-weight:400;text-transform:none;letter-spacing:0">· max 70 Zeichen</span></label>
+        <input id="meta-seo-title" type="text" placeholder="Keyword · Marke oder Nutzen · ofera.at" oninput="updateMetaChars(); updateSEO()">
+        <div class="char-counter" id="cc-meta-title">0 / 70</div>
+      </div>
+      <div class="meta-field">
+        <label>Meta Description <span style="font-weight:400;text-transform:none;letter-spacing:0">· 120–160 Zeichen</span></label>
+        <textarea id="meta-description" placeholder="Kurze Beschreibung des Inhalts für Google – enthält das Keyword." oninput="updateMetaChars(); updateSEO()"></textarea>
+        <div class="char-counter" id="cc-meta-desc">0 / 160</div>
+      </div>
+      <div class="meta-field">
+        <label>URL Handle</label>
+        <input id="meta-url-handle" type="text" placeholder="mehlwuermer-zuechten-anleitung" oninput="updateSEO()">
+      </div>
+    </div>
+
+    <!-- Rechte Spalte: SEO -->
+    <div class="meta-col">
+      <div class="meta-field">
+        <label>Focus Keyword</label>
+        <input id="meta-focus-kw" type="text" placeholder="Mehlwürmer züchten" oninput="updateSEO()">
+      </div>
+      <div class="seo-section-title" style="margin-top:8px;">SEO Checkliste</div>
+      <div class="seo-checks" id="seo-checks">
+        <div class="seo-check"><div class="seo-dot" id="seo-h1"></div><span class="seo-check-label">Keyword in H1/Titel</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-mt"></div><span class="seo-check-label">Keyword in Meta Title</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-md"></div><span class="seo-check-label">Keyword in Meta Description</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-url"></div><span class="seo-check-label">Keyword in URL Handle</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-fp"></div><span class="seo-check-label">Keyword im ersten Absatz</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-den"></div><span class="seo-check-label">Keyword-Dichte</span><span class="seo-check-val" id="seo-den-val">–</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-mtl"></div><span class="seo-check-label">Meta Title Länge</span><span class="seo-check-val" id="seo-mtl-val">–</span></div>
+        <div class="seo-check"><div class="seo-dot" id="seo-mdl"></div><span class="seo-check-label">Meta Description Länge</span><span class="seo-check-val" id="seo-mdl-val">–</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===================== TOOLBAR ===================== -->
+<div class="studio-toolbar">
+
+  <!-- Reihe 1: Formatierung -->
+  <div class="toolbar-row">
+    <span class="toolbar-label">Format:</span>
+    <button class="toolbar-btn" onclick="wrapSelection('**','**')" title="Fett (Strg+B)" style="font-weight:700;">B</button>
+    <button class="toolbar-btn" onclick="wrapSelection('*','*')" title="Kursiv (Strg+I)" style="font-style:italic;">I</button>
+    <button class="toolbar-btn" onclick="wrapSelection('~~','~~')" title="Durchgestrichen" style="text-decoration:line-through;">S</button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" onclick="openHeadingModal(2)" title="Überschrift H2">H2</button>
+    <button class="toolbar-btn" onclick="openHeadingModal(3)" title="Überschrift H3" style="font-size:11px;">H3</button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" onclick="insertList('ul')" title="Aufzählung"><i data-lucide="list"></i></button>
+    <button class="toolbar-btn" onclick="insertList('ol')" title="Nummerierte Liste"><i data-lucide="list-ordered"></i></button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" onclick="alignBlock('left')"   title="Linksbündig (Standard)"><i data-lucide="align-left"></i></button>
+    <button class="toolbar-btn" onclick="alignBlock('center')" title="Zentriert"><i data-lucide="align-center"></i></button>
+    <button class="toolbar-btn" onclick="alignBlock('right')"  title="Rechtsbündig"><i data-lucide="align-right"></i></button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" onclick="openLinkModal()" title="Link einfügen (Strg+K)"><i data-lucide="link-2"></i> Link</button>
+    <button class="toolbar-btn" onclick="insertHR()" title="Horizontale Trennlinie">— Trennlinie</button>
+  </div>
+
+  <!-- Reihe 2: Komponenten -->
+  <div class="toolbar-row">
+    <span class="toolbar-label">Komponenten:</span>
+    <button class="toolbar-btn" onclick="openModal('toc')"><i data-lucide="list"></i> Inhaltsverzeichnis</button>
+    <button class="toolbar-btn" onclick="openModal('callout')"><i data-lucide="alert-circle"></i> Callout</button>
+    <button class="toolbar-btn" onclick="openModal('teaser')"><i data-lucide="arrow-up-right"></i> Inline Teaser</button>
+    <button class="toolbar-btn" onclick="openModal('pcard')"><i data-lucide="package"></i> Product Card</button>
+    <button class="toolbar-btn" onclick="openModal('grid')"><i data-lucide="layout-grid"></i> Product Grid</button>
+    <button class="toolbar-btn" onclick="openModal('pricing')"><i data-lucide="tag"></i> Pricing Table</button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" onclick="openModal('image')"><i data-lucide="image"></i> Bild</button>
+    <button class="toolbar-btn" onclick="openModal('imgrow')"><i data-lucide="images"></i> Bildreihe</button>
+    <button class="toolbar-btn" onclick="openModal('video')"><i data-lucide="play-circle"></i> Video</button>
+    <div class="toolbar-sep"></div>
+    <button class="toolbar-btn" onclick="openModal('editorial')"><i data-lucide="newspaper"></i> Editorial</button>
+    <button class="toolbar-btn" onclick="openTableModal()"><i data-lucide="table-2"></i> Tabelle</button>
+  </div>
+
+</div>
+
+<!-- ===================== MAIN ===================== -->
+<div class="studio-main">
+
+  <!-- Editor -->
+  <div class="pane-editor">
+    <div class="pane-header">
+      <span>Shortcode Editor</span>
+      <span style="display:flex;gap:12px;color:var(--ui-muted);font-size:10px;">
+        <span id="word-count">0 Wörter</span>
+        <span id="char-count">0 Zeichen</span>
+      </span>
+    </div>
+    <div class="editor-gutter-wrap">
+      <div class="editor-gutter" id="editor-gutter"></div>
+      <textarea
+        class="editor-textarea"
+        id="editor"
+        placeholder="Artikeltext hier schreiben…&#10;&#10;Beispiele:&#10;[tipp]Tipp-Text hier, **fett** möglich.[/tipp]&#10;[inline-teaser type=&quot;shop&quot; title=&quot;Mehlwurm Farm&quot; url=&quot;/products/...&quot;]&#10;&#10;Oder Komponenten über die Toolbar oben einfügen."
+        oninput="onEditorInput()"
+        onscroll="syncGutter()"
+        spellcheck="false"
+      ></textarea>
+    </div>
+  </div>
+
+  <!-- Preview -->
+  <div class="pane-preview">
+    <div class="pane-header">
+      <span>Vorschau — HTML simuliert in Shopify</span>
+    </div>
+    <div class="preview-body">
+      <div class="article-preview" id="preview">
+        <p class="preview-empty">Vorschau erscheint hier beim Tippen…</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===================== MODALS ===================== -->
+
+<!-- Callout -->
+<div class="modal-overlay" id="modal-callout">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="alert-circle"></i> Callout Box</div>
+    <div class="form-row">
+      <label>Farbe</label>
+      <select id="c-color">
+        <option value="green">Grün</option>
+        <option value="orange">Orange</option>
+        <option value="blue">Blau</option>
+        <option value="gray">Grau (neutral)</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Titel <span style="font-weight:400;color:#888">(optional)</span></label>
+      <input id="c-title" type="text" placeholder="💡 Tipp">
+    </div>
+    <div class="form-row">
+      <label>Text</label>
+      <textarea id="c-text" placeholder="Die ideale Zuchttemperatur liegt bei **20–25 °C**."></textarea>
+      <div class="hint">**fett** · *kursiv* · ~~durchgestrichen~~ · [Linktext](url)</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('callout')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertCallout()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inline Teaser -->
+<div class="modal-overlay" id="modal-teaser">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="arrow-up-right"></i> Inline Teaser</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Typ</label>
+        <select id="t-type">
+          <option value="shop">Shop – grün</option>
+          <option value="digital">Digital – dunkel</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Label <span class="opt">optional</span></label>
+        <input id="t-label" type="text" placeholder="Produkt">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Titel</label>
+      <input id="t-title" type="text" placeholder="Mehlwurm Farm">
+    </div>
+    <div class="form-row">
+      <label>Sub-Zeile <span class="opt">optional</span></label>
+      <input id="t-sub" type="text" placeholder="Automatische Trennung · inkl. Anleitung">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>CTA Text <span class="opt">optional</span></label>
+        <input id="t-cta" type="text" placeholder="Zum Produkt →">
+      </div>
+      <div class="form-row">
+        <label>URL</label>
+        <input id="t-url" type="text" placeholder="/products/mehlwurm-farm">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('teaser')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertTeaser()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Product Card -->
+<div class="modal-overlay" id="modal-pcard">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="package"></i> Product Card</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Typ</label>
+        <select id="pc-type">
+          <option value="shop">Shop – grün</option>
+          <option value="digital">Digital – dunkel</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Label <span class="opt">optional</span></label>
+        <input id="pc-label" type="text" placeholder="Empfehlung">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Titel</label>
+      <input id="pc-title" type="text" placeholder="Mehlwurm Farm">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Preis <span class="opt">optional</span></label>
+        <input id="pc-price" type="text" placeholder="34,90€">
+      </div>
+      <div class="form-row">
+        <label>Badge <span class="opt">optional</span></label>
+        <input id="pc-badge" type="text" placeholder="Empfohlen">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Bild URL <span class="opt">optional</span></label>
+      <input id="pc-image" type="text" placeholder="https://cdn.shopify.com/…">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>CTA Text</label>
+        <input id="pc-cta" type="text" placeholder="Zum Produkt">
+      </div>
+      <div class="form-row">
+        <label>URL</label>
+        <input id="pc-url" type="text" placeholder="/products/…">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Benefits <span class="opt">eine pro Zeile, beginnt mit -</span></label>
+      <textarea id="pc-benefits" placeholder="- Automatische Trennung&#10;- inkl. Anleitung + Video&#10;- Modular erweiterbar"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Highlight <span class="opt">optional</span></label>
+      <select id="pc-highlight">
+        <option value="">Nein</option>
+        <option value="true">Ja – farbiger Rand + Schatten</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('pcard')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertProductCard()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image -->
+<div class="modal-overlay" id="modal-image">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="image"></i> Bild</div>
+    <div class="form-row">
+      <label>Bild URL</label>
+      <input id="i-src" type="text" placeholder="https://cdn.shopify.com/…">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Alt Text</label>
+        <input id="i-alt" type="text" placeholder="Beschreibung (SEO)">
+      </div>
+      <div class="form-row">
+        <label>Größe</label>
+        <select id="i-size">
+          <option value="full">Full – 100% Breite</option>
+          <option value="medium">Medium – 500px</option>
+          <option value="small">Small – 300px</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Titel <span class="opt">optional</span></label>
+      <input id="i-title" type="text" placeholder="Geschlossener Wasserkreislauf einer IBC-Anlage">
+    </div>
+    <div class="form-row">
+      <label>Caption <span class="opt">optional</span></label>
+      <input id="i-caption" type="text" placeholder="Quelle: OFERA Bauanleitung, S. 12">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('image')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertImage()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Image Row -->
+<div class="modal-overlay" id="modal-imgrow">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="images"></i> Bildreihe</div>
+    <div class="form-row">
+      <label>Anzahl Bilder</label>
+      <select id="ir-cols" onchange="updateImageRowCols()">
+        <option value="2">2 Bilder nebeneinander</option>
+        <option value="3">3 Bilder nebeneinander</option>
+      </select>
+    </div>
+
+    <!-- Bild 1 -->
+    <div class="tier-section">
+      <div class="tier-section-label">Bild 1</div>
+      <div class="form-row"><label>Bild URL</label><input id="ir-img1-src" type="text" placeholder="https://cdn.shopify.com/…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Alt Text <span class="opt">optional</span></label><input id="ir-img1-alt" type="text" placeholder="Beschreibung (SEO)"></div>
+        <div class="form-row"><label>Titel <span class="opt">optional</span></label><input id="ir-img1-title" type="text" placeholder="Bildtitel"></div>
+      </div>
+      <div class="form-row"><label>Caption <span class="opt">optional</span></label><input id="ir-img1-cap" type="text" placeholder="Bildunterschrift"></div>
+    </div>
+
+    <!-- Bild 2 -->
+    <div class="tier-section">
+      <div class="tier-section-label">Bild 2</div>
+      <div class="form-row"><label>Bild URL</label><input id="ir-img2-src" type="text" placeholder="https://cdn.shopify.com/…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Alt Text <span class="opt">optional</span></label><input id="ir-img2-alt" type="text" placeholder="Beschreibung (SEO)"></div>
+        <div class="form-row"><label>Titel <span class="opt">optional</span></label><input id="ir-img2-title" type="text" placeholder="Bildtitel"></div>
+      </div>
+      <div class="form-row"><label>Caption <span class="opt">optional</span></label><input id="ir-img2-cap" type="text" placeholder="Bildunterschrift"></div>
+    </div>
+
+    <!-- Bild 3 (nur bei 3 Bildern sichtbar) -->
+    <div class="tier-section" id="ir-img3-section" style="display:none;">
+      <div class="tier-section-label">Bild 3</div>
+      <div class="form-row"><label>Bild URL</label><input id="ir-img3-src" type="text" placeholder="https://cdn.shopify.com/…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Alt Text <span class="opt">optional</span></label><input id="ir-img3-alt" type="text" placeholder="Beschreibung (SEO)"></div>
+        <div class="form-row"><label>Titel <span class="opt">optional</span></label><input id="ir-img3-title" type="text" placeholder="Bildtitel"></div>
+      </div>
+      <div class="form-row"><label>Caption <span class="opt">optional</span></label><input id="ir-img3-cap" type="text" placeholder="Bildunterschrift"></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('imgrow')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertImageRow()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Video -->
+<div class="modal-overlay" id="modal-video">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="play-circle"></i> Video (YouTube)</div>
+    <div class="form-row">
+      <label>YouTube URL</label>
+      <input id="v-url" type="text" placeholder="https://youtube.com/watch?v=…">
+    </div>
+    <div class="form-row">
+      <label>Titel <span class="opt">optional</span></label>
+      <input id="v-title" type="text" placeholder="Bell Siphon erklärt – Funktion &amp; Einstellung">
+    </div>
+    <div class="form-row">
+      <label>Caption <span class="opt">optional</span></label>
+      <input id="v-caption" type="text" placeholder="Dauer: ca. 8 Minuten · OFERA YouTube Kanal">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('video')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertVideo()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Table of Contents -->
+<!-- Heading Modal -->
+<div class="modal-overlay" id="modal-heading">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title" id="heading-modal-title"><i data-lucide="heading-2"></i> H2 Überschrift</div>
+    <input type="hidden" id="heading-level" value="2">
+    <div class="form-row">
+      <label>Überschriftentext</label>
+      <input id="heading-text" type="text" placeholder="Deine Überschrift…" autocomplete="off" onkeydown="if(event.key==='Enter'){insertHeadingFromModal();}">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('heading')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertHeadingFromModal()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="modal-overlay" id="modal-toc">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="list"></i> Inhaltsverzeichnis</div>
+    <div class="form-row">
+      <label>Titel</label>
+      <input id="toc-title" type="text" placeholder="In diesem Artikel / On this page">
+      <div class="hint">Leer lassen für Standardwert ("In diesem Artikel")</div>
+    </div>
+    <div class="form-row">
+      <label>Tiefe</label>
+      <select id="toc-depth">
+        <option value="2">Nur Hauptkapitel (##)</option>
+        <option value="3">Haupt- + Unterkapitel (## und ###)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('toc')">Abbrechen</button>
+      <button class="btn-insert" id="toc-insert-btn" onclick="insertTOCFromModal()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Editorial Card -->
+<div class="modal-overlay" id="modal-editorial">
+  <div class="modal">
+    <div class="modal-title"><i data-lucide="newspaper"></i> Editorial Card</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Typ</label>
+        <select id="e-type">
+          <option value="shop">Shop – grün</option>
+          <option value="digital">Digital – dunkel</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Badge <span class="opt">optional</span></label>
+        <input id="e-badge" type="text" placeholder="Empfehlung">
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Titel</label>
+      <input id="e-title" type="text" placeholder="Mehlwurm Farm – der einfachste Einstieg">
+    </div>
+    <div class="form-row">
+      <label>Subtitle <span class="opt">optional</span></label>
+      <input id="e-subtitle" type="text" placeholder="Komplett-Set mit Zuchtbox, Startkolonie und Videoanleitung.">
+    </div>
+    <div class="form-row">
+      <label>Body Text <span class="opt">optional</span></label>
+      <textarea id="e-body" rows="3" placeholder="Storytelling-Text, Markdown: **fett** · *kursiv* · ~~durchgestrichen~~ · [Linktext](url)"></textarea>
+    </div>
+    <div class="form-row">
+      <label>Bild URL <span class="opt">optional</span></label>
+      <input id="e-image" type="text" placeholder="https://…">
+    </div>
+    <div class="form-row">
+      <label>Social Proof <span class="opt">optional</span></label>
+      <input id="e-social" type="text" placeholder="⭐ 4.9 · 347 Lernende · Zuletzt aktualisiert März 2025">
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Preis <span class="opt">optional</span></label>
+        <input id="e-price" type="text" placeholder="49€">
+      </div>
+      <div class="form-row">
+        <label>Preishinweis <span class="opt">optional</span></label>
+        <input id="e-price-note" type="text" placeholder="einmalig">
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>CTA Text</label>
+        <input id="e-cta" type="text" placeholder="Jetzt starten">
+      </div>
+      <div class="form-row">
+        <label>URL</label>
+        <input id="e-url" type="text" placeholder="https://…">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('editorial')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertEditorial()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pricing Table -->
+<div class="modal-overlay" id="modal-pricing">
+  <div class="modal modal-wide">
+    <div class="modal-title"><i data-lucide="tag"></i> Pricing Table</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Anzahl Tiers</label>
+        <select id="pr-cols" onchange="updatePricingTiers()">
+          <option value="2">2 Tiers</option>
+          <option value="3" selected>3 Tiers</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Typ</label>
+        <select id="pr-type">
+          <option value="shop">Shop – grün</option>
+          <option value="digital">Digital – dunkel</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>Tier-Bezeichnung <span class="opt">für alle Tiers — z.B. Paket, Kurs, Plan</span></label>
+      <input id="pr-tier-label" type="text" placeholder="Paket">
+    </div>
+
+    <!-- Tier 1 -->
+    <div class="tier-section">
+      <div class="tier-section-label">Tier 1</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Name</label><input id="pr-t1-name" type="text" placeholder="Starter"></div>
+        <div class="form-row"><label>Preis</label><input id="pr-t1-price" type="text" placeholder="29€"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Preishinweis <span class="opt">optional</span></label><input id="pr-t1-note" type="text" placeholder="einmalig"></div>
+        <div class="form-row"><label>Badge <span class="opt">optional</span></label><input id="pr-t1-badge" type="text" placeholder=""></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Highlight</label><select id="pr-t1-hl"><option value="">Nein</option><option value="true">Ja – hervorgehoben</option></select></div>
+        <div class="form-row"><label>CTA Text</label><input id="pr-t1-cta" type="text" placeholder="Jetzt kaufen"></div>
+      </div>
+      <div class="form-row"><label>Bild URL <span class="opt">optional</span></label><input id="pr-t1-image" type="text" placeholder="https://…"></div>
+      <div class="form-row"><label>URL</label><input id="pr-t1-url" type="text" placeholder="/products/…"></div>
+      <div class="form-row"><label>Features <span class="opt">eine pro Zeile, beginnt mit -</span></label><textarea id="pr-t1-features" rows="3" placeholder="- Feature 1&#10;- Feature 2&#10;- Feature 3"></textarea></div>
+    </div>
+
+    <!-- Tier 2 -->
+    <div class="tier-section">
+      <div class="tier-section-label">Tier 2</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Name</label><input id="pr-t2-name" type="text" placeholder="Pro"></div>
+        <div class="form-row"><label>Preis</label><input id="pr-t2-price" type="text" placeholder="59€"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Preishinweis <span class="opt">optional</span></label><input id="pr-t2-note" type="text" placeholder="einmalig"></div>
+        <div class="form-row"><label>Badge <span class="opt">optional</span></label><input id="pr-t2-badge" type="text" placeholder="Beliebt"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Highlight</label><select id="pr-t2-hl"><option value="">Nein</option><option value="true">Ja – hervorgehoben</option></select></div>
+        <div class="form-row"><label>CTA Text</label><input id="pr-t2-cta" type="text" placeholder="Jetzt kaufen"></div>
+      </div>
+      <div class="form-row"><label>Bild URL <span class="opt">optional</span></label><input id="pr-t2-image" type="text" placeholder="https://…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>URL</label><input id="pr-t2-url" type="text" placeholder="/products/…"></div>
+        <div class="form-row"></div>
+      </div>
+      <div class="form-row"><label>Features <span class="opt">eine pro Zeile, beginnt mit -</span></label><textarea id="pr-t2-features" rows="3" placeholder="- Feature 1&#10;- Feature 2&#10;- Feature 3"></textarea></div>
+    </div>
+
+    <!-- Tier 3 (nur bei 3 Tiers sichtbar) -->
+    <div class="tier-section" id="pr-tier-3-section">
+      <div class="tier-section-label">Tier 3</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Name</label><input id="pr-t3-name" type="text" placeholder="Enterprise"></div>
+        <div class="form-row"><label>Preis</label><input id="pr-t3-price" type="text" placeholder="99€"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Preishinweis <span class="opt">optional</span></label><input id="pr-t3-note" type="text" placeholder="einmalig"></div>
+        <div class="form-row"><label>Badge <span class="opt">optional</span></label><input id="pr-t3-badge" type="text" placeholder=""></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Highlight</label><select id="pr-t3-hl"><option value="">Nein</option><option value="true">Ja – hervorgehoben</option></select></div>
+        <div class="form-row"><label>CTA Text</label><input id="pr-t3-cta" type="text" placeholder="Jetzt kaufen"></div>
+      </div>
+      <div class="form-row"><label>Bild URL <span class="opt">optional</span></label><input id="pr-t3-image" type="text" placeholder="https://…"></div>
+      <div class="form-row"><label>URL</label><input id="pr-t3-url" type="text" placeholder="/products/…"></div>
+      <div class="form-row"><label>Features <span class="opt">eine pro Zeile, beginnt mit -</span></label><textarea id="pr-t3-features" rows="3" placeholder="- Feature 1&#10;- Feature 2&#10;- Feature 3"></textarea></div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('pricing')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertPricingTable()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Product Grid -->
+<div class="modal-overlay" id="modal-grid">
+  <div class="modal modal-wide">
+    <div class="modal-title"><i data-lucide="layout-grid"></i> Product Grid</div>
+    <div class="form-grid">
+      <div class="form-row">
+        <label>Anzahl Produkte</label>
+        <select id="g-cols" onchange="updateProductGridCols()">
+          <option value="2" selected>2 Produkte</option>
+          <option value="3">3 Produkte</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Typ</label>
+        <select id="g-type">
+          <option value="shop">Shop – grün</option>
+          <option value="digital">Digital – dunkel</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Produkt 1 -->
+    <div class="tier-section">
+      <div class="tier-section-label">Produkt 1</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Titel</label><input id="g-p1-title" type="text" placeholder="Mehlwurm Farm"></div>
+        <div class="form-row"><label>Label <span class="opt">optional</span></label><input id="g-p1-label" type="text" placeholder="Empfehlung"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Preis <span class="opt">optional</span></label><input id="g-p1-price" type="text" placeholder="34,90€"></div>
+        <div class="form-row"><label>Badge <span class="opt">optional</span></label><input id="g-p1-badge" type="text" placeholder="Neu"></div>
+      </div>
+      <div class="form-row"><label>Bild URL <span class="opt">optional</span></label><input id="g-p1-image" type="text" placeholder="https://cdn.shopify.com/…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>CTA Text</label><input id="g-p1-cta" type="text" placeholder="Zum Produkt"></div>
+        <div class="form-row"><label>URL</label><input id="g-p1-url" type="text" placeholder="/products/…"></div>
+      </div>
+      <div class="form-row"><label>Benefits <span class="opt">eine pro Zeile, beginnt mit -</span></label><textarea id="g-p1-benefits" rows="3" placeholder="- Automatische Trennung&#10;- inkl. Anleitung + Video&#10;- Modular erweiterbar"></textarea></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Highlight</label><select id="g-p1-hl"><option value="">Nein</option><option value="true">Ja – farbiger Rand</option></select></div>
+        <div class="form-row"></div>
+      </div>
+    </div>
+
+    <!-- Produkt 2 -->
+    <div class="tier-section">
+      <div class="tier-section-label">Produkt 2</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Titel</label><input id="g-p2-title" type="text" placeholder="Mehlwurm Farm XL"></div>
+        <div class="form-row"><label>Label <span class="opt">optional</span></label><input id="g-p2-label" type="text" placeholder="Empfehlung"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Preis <span class="opt">optional</span></label><input id="g-p2-price" type="text" placeholder="59,90€"></div>
+        <div class="form-row"><label>Badge <span class="opt">optional</span></label><input id="g-p2-badge" type="text" placeholder="Empfohlen"></div>
+      </div>
+      <div class="form-row"><label>Bild URL <span class="opt">optional</span></label><input id="g-p2-image" type="text" placeholder="https://cdn.shopify.com/…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>CTA Text</label><input id="g-p2-cta" type="text" placeholder="Zum Produkt"></div>
+        <div class="form-row"><label>URL</label><input id="g-p2-url" type="text" placeholder="/products/…"></div>
+      </div>
+      <div class="form-row"><label>Benefits <span class="opt">eine pro Zeile, beginnt mit -</span></label><textarea id="g-p2-benefits" rows="3" placeholder="- Automatische Trennung&#10;- inkl. Anleitung + Video&#10;- Modular erweiterbar"></textarea></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Highlight</label><select id="g-p2-hl"><option value="">Nein</option><option value="true">Ja – farbiger Rand</option></select></div>
+        <div class="form-row"></div>
+      </div>
+    </div>
+
+    <!-- Produkt 3 (nur bei 3 Produkten sichtbar) -->
+    <div class="tier-section" id="g-prod-3-section" style="display:none;">
+      <div class="tier-section-label">Produkt 3</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Titel</label><input id="g-p3-title" type="text" placeholder="Mehlwurm Farm Pro"></div>
+        <div class="form-row"><label>Label <span class="opt">optional</span></label><input id="g-p3-label" type="text" placeholder="Empfehlung"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Preis <span class="opt">optional</span></label><input id="g-p3-price" type="text" placeholder="89,90€"></div>
+        <div class="form-row"><label>Badge <span class="opt">optional</span></label><input id="g-p3-badge" type="text" placeholder=""></div>
+      </div>
+      <div class="form-row"><label>Bild URL <span class="opt">optional</span></label><input id="g-p3-image" type="text" placeholder="https://cdn.shopify.com/…"></div>
+      <div class="form-grid">
+        <div class="form-row"><label>CTA Text</label><input id="g-p3-cta" type="text" placeholder="Zum Produkt"></div>
+        <div class="form-row"><label>URL</label><input id="g-p3-url" type="text" placeholder="/products/…"></div>
+      </div>
+      <div class="form-row"><label>Benefits <span class="opt">eine pro Zeile, beginnt mit -</span></label><textarea id="g-p3-benefits" rows="3" placeholder="- Automatische Trennung&#10;- inkl. Anleitung + Video&#10;- Modular erweiterbar"></textarea></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Highlight</label><select id="g-p3-hl"><option value="">Nein</option><option value="true">Ja – farbiger Rand</option></select></div>
+        <div class="form-row"></div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('grid')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertProductGrid()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Table Builder Modal -->
+<div class="modal-overlay" id="modal-table">
+  <div class="modal modal-wide">
+    <div class="modal-title"><i data-lucide="table-2"></i> Tabelle erstellen</div>
+    <div class="form-grid" style="margin-bottom:16px;">
+      <div class="form-row">
+        <label>Spalten</label>
+        <select id="tbl-cols" onchange="buildTableGrid()">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>Zeilen</label>
+        <select id="tbl-rows" onchange="buildTableGrid()">
+          <option value="2">2</option>
+          <option value="3" selected>3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+    </div>
+    <div class="tbl-grid-wrap">
+      <div class="tbl-grid" id="tbl-grid"></div>
+    </div>
+    <label style="display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-top:10px;">
+      <input type="checkbox" id="tbl-row-headers"> Erste Spalte als Zeilenbeschriftung (grün)
+    </label>
+    <div class="hint" style="margin-top:8px;">Grüne Zeile = Überschriften · <strong>**fett**</strong> und <strong>[Link](url)</strong> funktionieren in allen Zellen</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('table')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertTableFromModal()">Tabelle einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Save Source Modal -->
+<div class="modal-overlay" id="modal-save">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title"><i data-lucide="save"></i> Inhalt exportieren</div>
+    <div class="form-row">
+      <label>Seiten-Slug <span class="opt">URL-freundlicher Name</span></label>
+      <input id="save-slug" type="text" placeholder="mehlwuermer-zuechten">
+      <div class="hint">Kleinbuchstaben, Bindestriche statt Leerzeichen — wie die Shopify-URL</div>
+    </div>
+    <div class="form-row">
+      <label>Sprache</label>
+      <select id="save-lang">
+        <option value="de">DE – Deutsch</option>
+        <option value="en">EN – English</option>
+        <option value="fr">FR – Français</option>
+      </select>
+    </div>
+    <div class="form-row" style="background:#f8f9fa;border-radius:8px;padding:10px 12px;">
+      <div style="font-size:12px;color:#555;">Dateiname: <strong id="save-preview-name">mehlwuermer-zuechten-de.txt</strong></div>
+      <div style="font-size:11px;color:#aaa;margin-top:3px;">Empfehlung: im Ordner <code>articles/</code> ablegen, oder in einem Unterordner je nach Seitentyp</div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('save')">Abbrechen</button>
+      <button class="btn-insert" onclick="doSaveSource()">Herunterladen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Link Modal -->
+<div class="modal-overlay" id="modal-link">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-title"><i data-lucide="link-2"></i> Link einfügen</div>
+    <div class="form-row">
+      <label>Linktext</label>
+      <input id="link-text" type="text" placeholder="Mehlwurm Farm">
+    </div>
+    <div class="form-row">
+      <label>URL</label>
+      <input id="link-url" type="text" placeholder="/products/mehlwurm-farm" oninput="updateLinkHint()">
+      <div id="link-hint" class="hint" style="margin-top:5px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('link')">Abbrechen</button>
+      <button class="btn-insert" onclick="insertLink()">Einfügen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Raw Shortcode Edit Modal (for complex/nested components) -->
+<div class="modal-overlay" id="modal-raw-edit">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title" id="raw-edit-title"><i data-lucide="edit-2"></i> Shortcode bearbeiten</div>
+    <div class="form-row">
+      <label>Shortcode <span class="opt">direkt bearbeiten</span></label>
+      <textarea id="raw-edit-text" style="height:220px;font-family:'Monaco','Menlo','Courier New',monospace;font-size:12px;line-height:1.6;background:#1e1e2e;color:#cdd6f4;border-radius:8px;padding:12px;"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('raw-edit')">Abbrechen</button>
+      <button class="btn-insert" onclick="saveRawEdit()">Aktualisieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input for loading -->
+<input type="file" id="file-loader" accept=".txt" style="display:none" onchange="onFileLoaded(event)">
+
+<!-- Toast -->
+<div class="copy-toast" id="toast"></div>
+
+<!-- ===================== SCRIPT ===================== -->
+<script>
+
+// =====================================================
+// HELPERS
+// =====================================================
+
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function parseAttrs(str) {
+  const out = {};
+  // quoted: attr="value"  and  unquoted: attr=value
+  const re = /([\w-]+)=(?:"([^"]*)"|(\S+))/g;
+  let m;
+  while ((m = re.exec(str)) !== null) out[m[1]] = m[2] !== undefined ? m[2] : m[3];
+  return out;
+}
+
+function parseBenefits(content) {
+  return (content || '').trim().split('\n')
+    .filter(l => l.trim().startsWith('-'))
+    .map(l => `<li>${escHtml(l.trim().slice(1).trim())}</li>`)
+    .join('');
+}
+
+function parseMarkdown(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/~~(.*?)~~/g, '<s>$1</s>')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_, linkText, url) => {
+      const isExternal = /^https?:\/\//i.test(url.trim());
+      const attrs = isExternal ? ' target="_blank" rel="noopener"' : '';
+      return `<a href="${url.trim()}"${attrs}>${linkText}</a>`;
+    });
+}
+
+function slugify(text) {
+  return text.toLowerCase()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+
+function parseHeading(block) {
+  const m = block.match(/^(#{1,3})\s+(.+)$/);
+  if (!m) return null;
+  const level = m[1].length;
+  const text = m[2].trim();
+  const id = level >= 2 ? ` id="${slugify(text)}"` : '';
+  return `<h${level}${id}>${parseMarkdown(text)}</h${level}>`;
+}
+
+function parseMarkdownTable(block, rowHeaders = false) {
+  const lines = block.split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length < 3) return null;
+  if (!lines.every(l => l.startsWith('|') && l.endsWith('|'))) return null;
+  if (!lines[1].replace(/[\s\-:|]/g, '').replace(/\|/g,'') === '') return null;
+  if (!lines[1].match(/^\|[\s\-:|]+\|$/)) return null;
+
+  const parseRow = l => l.slice(1,-1).split('|').map(c => c.trim());
+  const headers = parseRow(lines[0]);
+  const rows    = lines.slice(2).map(parseRow);
+
+  const th  = headers.map(h => `<th>${parseMarkdown(h)}</th>`).join('');
+  const trs = rows.map(r => `<tr>${r.map((c, i) => {
+    return `<td data-label="${escHtml(headers[i] || '')}">${parseMarkdown(c)}</td>`;
+  }).join('')}</tr>`).join('');
+  const cls = rowHeaders ? 'ofera-table ofera-table--row-headers' : 'ofera-table';
+  return `<div class="ofera-table-wrap"><table class="${cls}"><thead><tr>${th}</tr></thead><tbody>${trs}</tbody></table></div>`;
+}
+
+function collectHeadings(input) {
+  const out = [];
+  for (const line of input.split('\n')) {
+    const m = line.trim().match(/^(#{2,3})\s+(.+)$/);
+    if (m) out.push({ level: m[1].length, text: m[2].trim(), slug: slugify(m[2].trim()) });
+  }
+  return out;
+}
+
+function renderTOC(headings, depth, title) {
+  depth = parseInt(depth) || 2; // default: H2 only
+  title = title || 'In diesem Artikel';
+  const filtered = headings.filter(h => h.level <= depth);
+  if (!filtered.length) return '<p><em>Keine Überschriften (## / ###) gefunden.</em></p>';
+  const items = filtered.map(h => {
+    const sub = h.level === 3 ? ' class="toc-sub"' : '';
+    return `<li${sub}><a href="#${h.slug}">${escHtml(h.text)}</a></li>`;
+  }).join('');
+  return `<div class="ofera-toc"><div class="ofera-toc-title">${escHtml(title)}</div><ul>${items}</ul></div>`;
+}
+
+function ytId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+
+// =====================================================
+// RENDERERS
+// =====================================================
+
+function renderCallout(colorOrType, content, title) {
+  // Map new color values + legacy type names to CSS modifier class
+  const clsMap = {
+    green:    'ofera-callout--green',
+    orange:   'ofera-callout--orange',
+    blue:     'ofera-callout--blue',
+    gray:     'ofera-callout--gray',
+    // backward-compat: legacy [tipp] [wichtig] [info] [ergebnis]
+    tipp:     'ofera-callout--tip',
+    wichtig:  'ofera-callout--warning',
+    info:     'ofera-callout--info',
+    ergebnis: 'ofera-callout--result',
+  };
+  const cls = clsMap[colorOrType] || 'ofera-callout--green';
+  const titleHtml = title ? `<strong class="ofera-callout-title">${escHtml(title)}</strong>` : '';
+  return `<div class="ofera-callout ${cls}">${titleHtml}${parseMarkdown(content.trim()).replace(/\n/g, '<br>')}</div>`;
+}
+
+function renderTeaser(attrs) {
+  const dc = attrs.type === 'digital' ? ' ofera-inline-teaser--digital' : '';
+  const label = attrs.label ? `<div class="it-label">${escHtml(attrs.label)}</div>` : '';
+  const sub   = attrs.sub   ? `<div class="it-sub">${escHtml(attrs.sub)}</div>` : '';
+  const cta   = attrs.cta   ? `<span class="it-cta">${escHtml(attrs.cta)}</span>` : '';
+  return `<a class="ofera-inline-teaser${dc}" href="${escHtml(attrs.url||'#')}">
+  <div class="it-info">${label}<div class="it-title">${escHtml(attrs.title||'')}</div>${sub}</div>
+  ${cta}
+</a>`;
+}
+
+function renderProductCard(attrs, content, standalone) {
+  const dc  = attrs.type === 'digital' ? ' ofera-product-card--digital' : '';
+  const hl  = attrs.highlight === 'true' ? ' ofera-product-card--highlight' : '';
+  const badge = attrs.badge ? `<span class="opc-badge">${escHtml(attrs.badge)}</span>` : '';
+  const img   = attrs.image ? `<img src="${escHtml(attrs.image)}" alt="${escHtml(attrs.alt||attrs.title||'')}">` : '';
+  const label = attrs.label ? `<div class="opc-label">${escHtml(attrs.label)}</div>` : '';
+  const price = attrs.price ? `<div class="opc-price">${escHtml(attrs.price)}</div>` : '';
+  const items = parseBenefits(content);
+  const feats = items ? `<ul class="opc-features">${items}</ul>` : '';
+  const wrap  = standalone ? ' style="max-width:460px;margin:0 auto;"' : '';
+  return `<div class="ofera-product-card${dc}${hl}"${wrap}>
+  ${badge}${img}
+  <div class="opc-body">
+    ${label}
+    <div class="opc-title">${escHtml(attrs.title||'')}</div>
+    ${price}${feats}
+    <a class="opc-btn" href="${escHtml(attrs.url||'#')}">${escHtml(attrs.cta||'Mehr erfahren')}</a>
+  </div>
+</div>`;
+}
+
+function renderImage(attrs) {
+  const sc = attrs.size === 'medium' ? ' ofera-media--medium' : attrs.size === 'small' ? ' ofera-media--small' : '';
+  const title   = attrs.title   ? `<div class="om-title">${escHtml(attrs.title)}</div>` : '';
+  const caption = attrs.caption ? `<div class="om-cap">${escHtml(attrs.caption)}</div>` : '';
+  const fig = (title||caption) ? `<figcaption>${title}${caption}</figcaption>` : '';
+  return `<figure class="ofera-media${sc}">
+  <img src="${escHtml(attrs.src||'')}" alt="${escHtml(attrs.alt||attrs.title||'')}">
+  ${fig}
+</figure>`;
+}
+
+function renderImageRow(cols, inner) {
+  const figures = [];
+  inner.replace(/\[image([^\]]*)\]/gi, (_, a) => {
+    const attrs = parseAttrs(a);
+    if (!attrs.src) return;
+    const title = attrs.title   ? `<div class="om-title">${escHtml(attrs.title)}</div>`   : '';
+    const cap   = attrs.caption ? `<div class="om-cap">${escHtml(attrs.caption)}</div>` : '';
+    figures.push(`<figure><img src="${escHtml(attrs.src)}" alt="${escHtml(attrs.alt||'')}">${title}${cap}</figure>`);
+  });
+  return `<div class="ofera-image-row ofera-image-row--cols-${cols}">${figures.join('')}</div>`;
+}
+
+function renderVideo(attrs) {
+  const id = ytId(attrs.url||'');
+  let embed;
+  if (id) {
+    // Preview uses placeholder (file:// blocks YouTube). Export uses real iframe.
+    embed = `<div class="yt-placeholder" style="position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#111;color:#fff;gap:6px;">
+      <div style="font-size:40px;opacity:0.8;">▶</div>
+      <div style="font-size:13px;opacity:0.6;">YouTube Vorschau — erscheint auf Shopify</div>
+      <div style="font-size:12px;opacity:0.4;">ID: ${id}</div>
+    </div>`;
+  } else {
+    embed = `<div class="yt-placeholder" style="position:absolute;top:0;left:0;width:100%;height:100%;background:#111;color:#555;display:flex;align-items:center;justify-content:center;">Ungültige YouTube-URL</div>`;
+  }
+  const title   = attrs.title   ? `<div class="om-title">${escHtml(attrs.title)}</div>` : '';
+  const caption = attrs.caption ? `<div class="om-cap">${escHtml(attrs.caption)}</div>` : '';
+  return `<div class="ofera-video-block">
+  <div class="ofera-video"><div class="video-wrapper">${embed}</div></div>
+  ${title}${caption}
+</div>`;
+}
+
+// For export: real YouTube iframe
+function renderVideoExport(attrs) {
+  const id = ytId(attrs.url||'');
+  const title   = attrs.title   ? `<div class="om-title">${escHtml(attrs.title)}</div>` : '';
+  const caption = attrs.caption ? `<div class="om-cap">${escHtml(attrs.caption)}</div>` : '';
+  const iframe  = id
+    ? `<iframe src="https://www.youtube.com/embed/${id}" frameborder="0" allowfullscreen loading="lazy"></iframe>`
+    : `<!-- ungültige YouTube-URL: ${escHtml(attrs.url||'')} -->`;
+  return `<div class="ofera-video-block">
+  <div class="ofera-video"><div class="video-wrapper">${iframe}</div></div>
+  ${title}${caption}
+</div>`;
+}
+
+function renderEditorial(attrs, body) {
+  const dc     = attrs.type === 'digital' ? ' ofera-editorial-card--digital' : '';
+  const badge  = attrs.badge    ? `<span class="ec-badge">${escHtml(attrs.badge)}</span>` : '';
+  const sub    = attrs.subtitle ? `<p>${escHtml(attrs.subtitle)}</p>` : '';
+  const img    = attrs.image    ? `<img src="${escHtml(attrs.image)}" alt="${escHtml(attrs.title||'')}">` : '';
+  const social = attrs['social-proof'] ? `<div class="ec-social">${escHtml(attrs['social-proof'])}</div>` : '';
+  const price  = attrs.price    ? `<span class="ec-cta-price">${escHtml(attrs.price)}</span>` : '';
+  const pnote  = attrs['price-note'] ? `<span class="ec-cta-note">${escHtml(attrs['price-note'])}</span>` : '';
+  const pblock = (price||pnote) ? `<div class="ec-cta-price-row">${price}${pnote}</div>` : '';
+  const ctabtn = (attrs.url || attrs.cta) ? `<a class="ec-cta-btn" href="${escHtml(attrs.url||'#')}">${escHtml(attrs.cta||'Mehr erfahren')}</a>` : '';
+  const ctablock = (pblock||ctabtn) ? `<div class="ec-cta">${pblock}${ctabtn}</div>` : '';
+  const bodyTrimmed = (body || '').trim();
+  const bodyHtml = bodyTrimmed ? `<div class="ec-body">${parseMarkdown(bodyTrimmed)}</div>` : '';
+  return `<div class="ofera-editorial-card${dc}">
+  <div class="ec-header">
+    ${badge}
+    <h3>${escHtml(attrs.title||'')}</h3>
+    ${sub}
+  </div>
+  ${img}${bodyHtml}${social}${ctablock}
+</div>`;
+}
+
+function renderPricingTier(attrs, content, tableType) {
+  const type = attrs.type || tableType || 'shop';
+  const isD  = type === 'digital';
+  const isHL = attrs.highlight === 'true';
+  let cls = `ofera-pricing-card${isD ? ' ofera-pricing-card--digital' : ''}`;
+  if (isHL) cls += isD ? ' ofera-pricing-card--highlight-digital' : ' ofera-pricing-card--highlight';
+
+  const badge = attrs.badge ? `<span class="prc-badge">${escHtml(attrs.badge)}</span>` : '';
+  const slotCls = `prc-slot${isD ? ' prc-slot--digital' : ''}`;
+  const header = `<div class="prc-header-band"><div class="prc-tier">${escHtml(attrs.label||'Paket')}</div><div class="prc-tier-name">${escHtml(attrs.tier||'')}</div></div>`;
+  const img = attrs.image ? `<img src="${escHtml(attrs.image)}" alt="${escHtml(attrs.tier||'')}">` : '';
+  const pnote = attrs['price-note'] ? `<span class="prc-price-note">${escHtml(attrs['price-note'])}</span>` : '';
+  const items = parseBenefits(content);
+  const featureList = items ? `<ul class="prc-features">${items}</ul>` : '';
+  return `<div class="${slotCls}">
+  ${badge}<div class="${cls}">
+  ${header}${img}
+  <div class="prc-body">
+    <div class="prc-price"><span class="prc-price-amount">${escHtml(attrs.price||'')}</span>${pnote}</div>
+    ${featureList}
+    <a class="prc-btn" href="${escHtml(attrs.url||'#')}">${escHtml(attrs.cta||'Kaufen')}</a>
+  </div>
+</div></div>`;
+}
+
+// =====================================================
+// SHORTCODE PARSER
+// =====================================================
+
+// =====================================================
+// EDITABLE COMPONENT REGISTRY
+// =====================================================
+
+let _editRegistry = []; // reset each preview render
+let _currentEditIdx = -1; // -1 = insert mode
+
+function _reg(type, sc, html) {
+  // In export mode, return raw html; in preview mode wrap with editable overlay
+  if (_exportMode) return html;
+  const idx = _editRegistry.length;
+  _editRegistry.push({ type, sc });
+  const label = { callout:'Callout', teaser:'Inline Teaser', pcard:'Product Card',
+    image:'Bild', 'image-row':'Bildreihe', video:'Video', editorial:'Editorial',
+    'pricing-table':'Pricing Table', 'product-grid':'Product Grid', toc:'Inhaltsverzeichnis', table:'Tabelle' }[type] || type;
+  return `<div class="ofera-editable" data-idx="${idx}">
+${html}
+<button class="ofera-edit-btn" onclick="editComponent(${idx})">✏ ${label} bearbeiten</button>
+</div>`;
+}
+
+let _exportMode = false;
+
+function normalizeInput(text) {
+  // Ensure headings always have a blank line before them (unless at start)
+  text = text.replace(/([^\n])\n(#{1,3}\s)/g, '$1\n\n$2');
+  // Ensure headings always have a blank line after them (unless already followed by blank)
+  text = text.replace(/(#{1,3}\s[^\n]+)\n(?!\n)/g, '$1\n\n');
+
+  // Ensure block-level shortcodes always have a blank line BEFORE the opening tag
+  text = text.replace(/([^\n])\n(\[(?:callout|toc|video|image|image-row|inline-teaser|product-card|editorial|pricing-table|product-grid|table|tipp|wichtig|info|ergebnis))/gi, '$1\n\n$2');
+
+  // Ensure blank line AFTER standalone closing tags and after single-tag block shortcodes
+  text = text.replace(/(\[\/(?:callout|image-row|product-card|editorial|pricing-table|product-grid|table|tipp|wichtig|info|ergebnis)\])\n(?!\n)/gi, '$1\n\n');
+  text = text.replace(/(\[(?:toc|video|image|inline-teaser|editorial)[^\]]*\])\n(?!\n)/gi, '$1\n\n');
+
+  return text;
+}
+
+function parseShortcodes(input, forExport) {
+  if (!input.trim()) return '';
+  _exportMode = !!forExport;
+  _editRegistry = [];
+  let html = input; // Don't normalize yet — do it after alignment parsing
+
+  // Pre-pass: protect inline code spans (`...`) from shortcode parsing
+  const _codeSpans = [];
+  html = html.replace(/`([^`\n]+)`/g, (_, code) => {
+    _codeSpans.push(code);
+    return `\x00CODE${_codeSpans.length - 1}\x00`;
+  });
+
+  // Pre-pass: collect headings for [toc] (from original input before any transforms)
+  const headings = collectHeadings(input);
+
+  // 0 · [toc] or [toc depth=3]
+  html = html.replace(/\[toc([^\]]*)\]/gi, (full, attrs) => {
+    const a = parseAttrs(attrs);
+    return _reg('toc', `[toc${attrs}]`, renderTOC(headings, a.depth, a.title));
+  });
+
+  // 0b · Text alignment (must run BEFORE heading normalization)
+  html = html.replace(/\[center\]([\s\S]*?)\[\/center\]/gi, (_, c) =>
+    `<div style="text-align:center;">${parseMarkdown(c.trim())}</div>`);
+  html = html.replace(/\[right\]([\s\S]*?)\[\/right\]/gi, (_, c) =>
+    `<div style="text-align:right;">${parseMarkdown(c.trim())}</div>`);
+
+  // 0c · Horizontal rule
+  html = html.replace(/(^|\n)---(\n|$)/g, '\n<hr>\n');
+
+  // 0d · Normalize headings (after alignment parsing to avoid inserting blank lines inside [center])
+  html = normalizeInput(html);
+
+  // 1 · pricing-table (wraps pricing-tier)
+  html = html.replace(/\[pricing-table([^\]]*)\]([\s\S]*?)\[\/pricing-table\]/gi, (full, a, inner) => {
+    const at = parseAttrs(a);
+    const cols = at.cols || '3';
+    const type = at.type || 'shop';
+    const tiers = inner.replace(/\[pricing-tier([^\]]*)\]([\s\S]*?)\[\/pricing-tier\]/gi, (_2, a2, c2) => {
+      return renderPricingTier(parseAttrs(a2), c2, type);
+    });
+    const rendered = `<div class="ofera-pricing-table ofera-pricing-table--cols-${cols}">${tiers}</div>`;
+    return _reg('pricing-table', full, rendered);
+  });
+
+  // 2 · product-grid (wraps product-card)
+  html = html.replace(/\[product-grid([^\]]*)\]([\s\S]*?)\[\/product-grid\]/gi, (full, a, inner) => {
+    const at = parseAttrs(a);
+    const cols = at.cols || '2';
+    const cards = inner.replace(/\[product-card([^\]]*)\]([\s\S]*?)\[\/product-card\]/gi, (_2, a2, c2) => {
+      return renderProductCard(parseAttrs(a2), c2, false);
+    });
+    const extraCols = cols !== '2' ? ` ofera-product-grid--cols-${cols}` : '';
+    const rendered = `<div class="ofera-product-grid${extraCols}">${cards}</div>`;
+    return _reg('product-grid', full, rendered);
+  });
+
+  // 3 · standalone product-card
+  html = html.replace(/\[product-card([^\]]*)\]([\s\S]*?)\[\/product-card\]/gi, (full, a, c) => {
+    return _reg('pcard', full, renderProductCard(parseAttrs(a), c, true));
+  });
+
+  // 4 · callout boxes — new: [callout color="green|orange|blue|gray" title="..."]...[/callout]
+  html = html.replace(/\[callout([^\]]*)\]([\s\S]*?)\[\/callout\]/gi, (full, attrStr, content) => {
+    const a = parseAttrs(attrStr);
+    if (!a.color) return full; // skip if no color attr (avoid false matches)
+    return _reg('callout', full, renderCallout(a.color.toLowerCase(), content, a.title || ''));
+  });
+  // backward-compat: legacy [tipp] [wichtig] [info] [ergebnis]
+  html = html.replace(/\[(tipp|wichtig|info|ergebnis)\]([\s\S]*?)\[\/\1\]/gi, (full, type, content) => {
+    return _reg('callout', full, renderCallout(type.toLowerCase(), content));
+  });
+
+  // 5 · inline-teaser
+  html = html.replace(/\[inline-teaser([^\]]*)\]/gi, (full, a) => {
+    return _reg('teaser', full, renderTeaser(parseAttrs(a)));
+  });
+
+  // 5b · image-row (must run BEFORE standalone image to avoid pre-processing inner tags)
+  html = html.replace(/\[image-row([^\]]*)\]([\s\S]*?)\[\/image-row\]/gi, (full, a, inner) => {
+    const cols = parseAttrs(a).cols === '3' ? '3' : '2';
+    return _reg('image-row', full, renderImageRow(cols, inner));
+  });
+
+  // 6 · image
+  html = html.replace(/\[image([^\]]*)\]/gi, (full, a) => {
+    return _reg('image', full, renderImage(parseAttrs(a)));
+  });
+
+  // 7 · video
+  html = html.replace(/\[video([^\]]*)\]/gi, (full, a) => {
+    const rendered = forExport ? renderVideoExport(parseAttrs(a)) : renderVideo(parseAttrs(a));
+    return _reg('video', full, rendered);
+  });
+
+  // 8 · editorial
+  html = html.replace(/\[editorial([^\]]*)\]([\s\S]*?)\[\/editorial\]/gi, (full, a, body) => {
+    return _reg('editorial', full, renderEditorial(parseAttrs(a), body || ''));
+  });
+
+  // 9 · [table row-headers]...[/table] wrapper
+  html = html.replace(/\[table row-headers\]([\s\S]*?)\[\/table\]/gi, (full, content) => {
+    const tbl = parseMarkdownTable(content.trim(), true);
+    return tbl ? _reg('table', full, tbl) : full;
+  });
+
+  // 10 · Plain text → paragraphs + headings + tables + lists
+  const blocks = html.split(/\n{2,}/);
+  html = blocks.map(block => {
+    block = block.trim();
+    if (!block) return '';
+    if (block.match(/^<[a-zA-Z\/]/)) return block;
+    const heading = parseHeading(block);
+    if (heading) return heading;
+    const table = parseMarkdownTable(block);
+    if (table) return _reg('table', block, table);
+    // Bullet list: every non-empty line starts with "- " or "* "
+    const lines = block.split('\n');
+    const bulletLines = lines.filter(l => l.trim());
+    if (bulletLines.length > 0 && bulletLines.every(l => /^[-*]\s/.test(l.trim()))) {
+      const items = bulletLines
+        .map(l => `<li>${parseMarkdown(l.trim().replace(/^[-*]\s+/, ''))}</li>`)
+        .join('');
+      return `<ul>${items}</ul>`;
+    }
+    // Numbered list: every non-empty line starts with "1. " / "2. " etc.
+    if (bulletLines.length > 0 && bulletLines.every(l => /^\d+\.\s/.test(l.trim()))) {
+      const items = bulletLines
+        .map(l => `<li>${parseMarkdown(l.trim().replace(/^\d+\.\s+/, ''))}</li>`)
+        .join('');
+      return `<ol>${items}</ol>`;
+    }
+    const withBr = block.replace(/\n/g, '<br>');
+    return `<p>${parseMarkdown(withBr)}</p>`;
+  }).filter(Boolean).join('\n');
+
+  // Restore inline code spans as <code> elements
+  html = html.replace(/\x00CODE(\d+)\x00/g, (_, i) => `<code>${escHtml(_codeSpans[+i])}</code>`);
+
+  return html;
+}
+
+// =====================================================
+// CLICK-TO-EDIT
+// =====================================================
+
+function editComponent(idx) {
+  const entry = _editRegistry[idx];
+  if (!entry) return;
+  _currentEditIdx = idx;
+  const { type, sc } = entry;
+
+  const prefillMap = {
+    callout:        () => prefillCallout(sc),
+    teaser:         () => prefillTeaser(sc),
+    pcard:          () => prefillProductCard(sc),
+    image:          () => prefillImage(sc),
+    'image-row':    () => prefillImageRow(sc),
+    video:          () => prefillVideo(sc),
+    editorial:      () => prefillEditorial(sc),
+    'pricing-table':() => prefillPricingTable(sc),
+    'product-grid': () => prefillProductGrid(sc),
+    toc:            () => prefillTOC(sc),
+    table:          () => prefillTable(sc),
+  };
+
+  const fn = prefillMap[type];
+  if (!fn) return;
+  fn();
+
+  // Update modal button label and open modal
+  const modalId = { callout:'callout', teaser:'teaser', pcard:'pcard',
+                    image:'image', 'image-row':'imgrow', video:'video', editorial:'editorial',
+                    'pricing-table':'pricing', 'product-grid':'grid', toc:'toc', table:'table' }[type];
+  if (modalId) {
+    const btn = document.querySelector(`#modal-${modalId} .btn-insert`);
+    if (btn) btn.textContent = 'Aktualisieren';
+    openModal(modalId);
+  }
+}
+
+function finishEdit(newSC) {
+  if (_currentEditIdx < 0) return false;
+  const oldSC = _editRegistry[_currentEditIdx]?.sc;
+  if (!oldSC) return false;
+  const ta = document.getElementById('editor');
+
+  // Count how many identical shortcodes appear before this index → replace the N-th occurrence
+  const nthOcc = _editRegistry.slice(0, _currentEditIdx).filter(e => e.sc === oldSC).length;
+  const replaceNth = (str, search, repl, n) => {
+    let pos = -1;
+    for (let i = 0; i <= n; i++) { pos = str.indexOf(search, pos + 1); if (pos < 0) return str; }
+    return str.slice(0, pos) + repl + str.slice(pos + search.length);
+  };
+
+  if (ta.value.includes(oldSC)) {
+    ta.value = replaceNth(ta.value, oldSC, newSC, nthOcc);
+  } else {
+    // Parser normalizes whitespace before matching — try on normalized content
+    const normalized = normalizeInput(ta.value);
+    if (normalized.includes(oldSC)) {
+      ta.value = replaceNth(normalized, oldSC, newSC, nthOcc);
+    } else {
+      insertAtCursor(newSC); // fallback
+    }
+  }
+  _currentEditIdx = -1;
+  updatePreview();
+  updateCharCount();
+  return true;
+}
+
+function resetModalBtn(modalId) {
+  const btn = document.querySelector(`#modal-${modalId} .btn-insert`);
+  if (btn) btn.textContent = 'Einfügen';
+  _currentEditIdx = -1;
+}
+
+// (Modal overlay listeners are registered below in the modal system section)
+
+function openRawEdit(title, sc) {
+  document.getElementById('raw-edit-title').textContent = '✏ ' + title;
+  document.getElementById('raw-edit-text').value = sc;
+  openModal('raw-edit');
+}
+
+function saveRawEdit() {
+  const newSC = document.getElementById('raw-edit-text').value.trim();
+  if (!newSC) return;
+  if (_currentEditIdx >= 0) {
+    finishEdit(newSC);
+  } else {
+    insertAtCursor(newSC);
+  }
+  closeModal('raw-edit');
+  _currentEditIdx = -1;
+}
+
+// =====================================================
+// PREFILL FUNCTIONS
+// =====================================================
+
+function prefillTOC(sc) {
+  const a = parseAttrs(sc.replace(/^\[toc/i, '').replace(/\]$/, ''));
+  const titleEl = document.getElementById('toc-title');
+  const depthEl = document.getElementById('toc-depth');
+  if (titleEl) titleEl.value = a.title || '';
+  if (depthEl) depthEl.value = a.depth === '3' ? '3' : '2';
+}
+
+function prefillCallout(sc) {
+  // New format: [callout color="green" title="..."]...[/callout]
+  let m = sc.match(/^\[callout([^\]]*)\]([\s\S]*?)\[\/callout\]$/i);
+  if (m) {
+    const a = parseAttrs(m[1]);
+    document.getElementById('c-color').value = a.color ? a.color.toLowerCase() : 'green';
+    document.getElementById('c-title').value = a.title || '';
+    document.getElementById('c-text').value  = m[2].trim();
+    return;
+  }
+  // Backward-compat: [tipp] [wichtig] [info] [ergebnis]
+  m = sc.match(/^\[(tipp|wichtig|info|ergebnis)\]([\s\S]*?)\[\/\1\]$/i);
+  if (!m) return;
+  const legacyMap = { tipp: 'green', wichtig: 'orange', info: 'blue', ergebnis: 'green' };
+  document.getElementById('c-color').value = legacyMap[m[1].toLowerCase()] || 'green';
+  document.getElementById('c-title').value = '';
+  document.getElementById('c-text').value  = m[2].trim();
+}
+
+function prefillTeaser(sc) {
+  const m = sc.match(/^\[inline-teaser([^\]]*)\]$/i);
+  if (!m) return;
+  const a = parseAttrs(m[1]);
+  document.getElementById('t-type').value  = a.type  || 'shop';
+  document.getElementById('t-label').value = a.label || '';
+  document.getElementById('t-title').value = a.title || '';
+  document.getElementById('t-sub').value   = a.sub   || '';
+  document.getElementById('t-cta').value   = a.cta   || '';
+  document.getElementById('t-url').value   = a.url   || '';
+}
+
+function prefillProductCard(sc) {
+  const m = sc.match(/^\[product-card([^\]]*)\]([\s\S]*?)\[\/product-card\]$/i);
+  if (!m) return;
+  const a = parseAttrs(m[1]);
+  document.getElementById('pc-type').value      = a.type      || 'shop';
+  document.getElementById('pc-label').value     = a.label     || '';
+  document.getElementById('pc-title').value     = a.title     || '';
+  document.getElementById('pc-price').value     = a.price     || '';
+  document.getElementById('pc-badge').value     = a.badge     || '';
+  document.getElementById('pc-highlight').value = a.highlight || '';
+  document.getElementById('pc-image').value     = a.image     || '';
+  document.getElementById('pc-cta').value       = a.cta       || '';
+  document.getElementById('pc-url').value       = a.url       || '';
+  document.getElementById('pc-benefits').value  = m[2].trim();
+}
+
+function prefillImage(sc) {
+  const m = sc.match(/^\[image([^\]]*)\]$/i);
+  if (!m) return;
+  const a = parseAttrs(m[1]);
+  document.getElementById('i-src').value     = a.src     || '';
+  document.getElementById('i-alt').value     = a.alt     || '';
+  document.getElementById('i-size').value    = a.size    || 'full';
+  document.getElementById('i-title').value   = a.title   || '';
+  document.getElementById('i-caption').value = a.caption || '';
+}
+
+function prefillVideo(sc) {
+  const m = sc.match(/^\[video([^\]]*)\]$/i);
+  if (!m) return;
+  const a = parseAttrs(m[1]);
+  document.getElementById('v-url').value     = a.url     || '';
+  document.getElementById('v-title').value   = a.title   || '';
+  document.getElementById('v-caption').value = a.caption || '';
+}
+
+function prefillEditorial(sc) {
+  const m = sc.match(/^\[editorial([^\]]*)\]([\s\S]*)\[\/editorial\]$/i);
+  if (!m) return;
+  const a = parseAttrs(m[1]);
+  const body = m[2].trim();
+  document.getElementById('e-type').value       = a.type           || 'shop';
+  document.getElementById('e-badge').value      = a.badge          || '';
+  document.getElementById('e-title').value      = a.title          || '';
+  document.getElementById('e-subtitle').value   = a.subtitle       || '';
+  document.getElementById('e-body').value       = body;
+  document.getElementById('e-image').value      = a.image          || '';
+  document.getElementById('e-social').value     = a['social-proof']|| '';
+  document.getElementById('e-price').value      = a.price          || '';
+  document.getElementById('e-price-note').value = a['price-note']  || '';
+  document.getElementById('e-cta').value        = a.cta            || '';
+  document.getElementById('e-url').value        = a.url            || '';
+}
+
+function prefillPricingTable(sc) {
+  const outerM = sc.match(/\[pricing-table([^\]]*)\]/i);
+  if (!outerM) return;
+  const outerAttrs = parseAttrs(outerM[1]);
+  const cols = Math.min(Math.max(parseInt(outerAttrs.cols || '2'), 2), 3);
+  const colsSel = document.getElementById('pr-cols');
+  if (colsSel) colsSel.value = String(cols);
+  const typeSel = document.getElementById('pr-type');
+  if (typeSel && outerAttrs.type) typeSel.value = outerAttrs.type;
+  updatePricingTiers();
+  // Label aus erstem Tier lesen
+  const firstTierM = sc.match(/\[pricing-tier([^\]]*)\]/i);
+  if (firstTierM) {
+    const firstTierAttrs = parseAttrs(firstTierM[1]);
+    const labelEl = document.getElementById('pr-tier-label');
+    if (labelEl) labelEl.value = firstTierAttrs.label || '';
+  }
+
+  const tierRe = /\[pricing-tier([^\]]*)\]([\s\S]*?)\[\/pricing-tier\]/gi;
+  let n = 0;
+  let m;
+  while ((m = tierRe.exec(sc)) !== null && n < 3) {
+    n++;
+    const ta = parseAttrs(m[1]);
+    const content = m[2];
+    const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    sv(`pr-t${n}-name`,     ta.tier || '');
+    sv(`pr-t${n}-price`,    ta.price || '');
+    sv(`pr-t${n}-note`,     ta['price-note'] || '');
+    sv(`pr-t${n}-badge`,    ta.badge || '');
+    sv(`pr-t${n}-image`,    ta.image || '');
+    sv(`pr-t${n}-cta`,      ta.cta || '');
+    sv(`pr-t${n}-url`,      ta.url || '');
+    const hlEl = document.getElementById(`pr-t${n}-hl`);
+    if (hlEl) hlEl.value = ta.highlight === 'true' ? 'true' : '';
+    const feats = (content || '').trim().split('\n')
+      .filter(l => l.trim().startsWith('-')).map(l => l.trim()).join('\n');
+    sv(`pr-t${n}-features`, feats);
+  }
+}
+
+function prefillProductGrid(sc) {
+  const outerM = sc.match(/\[product-grid([^\]]*)\]/i);
+  if (!outerM) return;
+  const outerAttrs = parseAttrs(outerM[1]);
+  const cols = Math.min(Math.max(parseInt(outerAttrs.cols || '2'), 2), 3);
+  const colsSel = document.getElementById('g-cols');
+  if (colsSel) colsSel.value = String(cols);
+  // Detect type from first product-card
+  const firstCardM = sc.match(/\[product-card([^\]]*)\]/i);
+  if (firstCardM) {
+    const firstAttrs = parseAttrs(firstCardM[1]);
+    const typeSel = document.getElementById('g-type');
+    if (typeSel && firstAttrs.type) typeSel.value = firstAttrs.type;
+  }
+  updateProductGridCols();
+
+  const cardRe = /\[product-card([^\]]*)\]([\s\S]*?)\[\/product-card\]/gi;
+  let n = 0;
+  let m;
+  while ((m = cardRe.exec(sc)) !== null && n < 3) {
+    n++;
+    const ca = parseAttrs(m[1]);
+    const content = m[2];
+    const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    sv(`g-p${n}-title`,    ca.title || '');
+    sv(`g-p${n}-label`,    ca.label || '');
+    sv(`g-p${n}-price`,    ca.price || '');
+    sv(`g-p${n}-badge`,    ca.badge || '');
+    sv(`g-p${n}-image`,    ca.image || '');
+    sv(`g-p${n}-cta`,      ca.cta || '');
+    sv(`g-p${n}-url`,      ca.url || '');
+    const hlEl = document.getElementById(`g-p${n}-hl`);
+    if (hlEl) hlEl.value = ca.highlight === 'true' ? 'true' : '';
+    const benefits = (content || '').trim().split('\n')
+      .filter(l => l.trim().startsWith('-')).map(l => l.trim()).join('\n');
+    sv(`g-p${n}-benefits`, benefits);
+  }
+}
+
+function updateImageRowCols() {
+  const cols = document.getElementById('ir-cols').value;
+  document.getElementById('ir-img3-section').style.display = cols === '3' ? '' : 'none';
+}
+
+function insertImageRow() {
+  const cols = parseInt(document.getElementById('ir-cols').value);
+  const sv = id => (document.getElementById(id) || {value:''}).value;
+
+  function buildImg(n) {
+    const src = sv(`ir-img${n}-src`).trim();
+    if (!src) return null;
+    const alt   = sv(`ir-img${n}-alt`).trim();
+    const title = sv(`ir-img${n}-title`).trim();
+    const cap   = sv(`ir-img${n}-cap`).trim();
+    let attrs = `src="${src}"`;
+    if (alt)   attrs += ` alt="${alt}"`;
+    if (title) attrs += ` title="${title}"`;
+    if (cap)   attrs += ` caption="${cap}"`;
+    return `  [image ${attrs}]`;
+  }
+
+  const images = [];
+  for (let i = 1; i <= cols; i++) {
+    const img = buildImg(i);
+    if (img) images.push(img);
+  }
+  if (images.length < 2) { alert('Bitte mindestens 2 Bild-URLs eingeben.'); return; }
+
+  _commitSC('imgrow', `[image-row cols="${cols}"]\n${images.join('\n')}\n[/image-row]`);
+}
+
+function prefillImageRow(sc) {
+  const outerM = sc.match(/\[image-row([^\]]*)\]/i);
+  if (!outerM) return;
+  const cols = parseAttrs(outerM[1]).cols === '3' ? '3' : '2';
+  const colsSel = document.getElementById('ir-cols');
+  if (colsSel) colsSel.value = cols;
+  updateImageRowCols();
+
+  const imgRe = /\[image([^\]]*)\]/gi;
+  let n = 0;
+  let m;
+  while ((m = imgRe.exec(sc)) !== null && n < 3) {
+    n++;
+    const a = parseAttrs(m[1]);
+    const sv = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    sv(`ir-img${n}-src`,   a.src     || '');
+    sv(`ir-img${n}-alt`,   a.alt     || '');
+    sv(`ir-img${n}-title`, a.title   || '');
+    sv(`ir-img${n}-cap`,   a.caption || '');
+  }
+}
+
+// =====================================================
+// EDITOR / PREVIEW
+// =====================================================
+
+let debounceTimer;
+function onEditorInput() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(updatePreview, 120);
+  updateCharCount();
+}
+
+function updatePreview() {
+  const val = document.getElementById('editor').value;
+  const preview = document.getElementById('preview');
+  const html = parseShortcodes(val, false);
+  preview.innerHTML = html || '<p class="preview-empty">Vorschau erscheint hier beim Tippen…</p>';
+  updateGutter(val);
+  updateSEO();
+}
+
+// Editor gutter: green marks on lines that contain shortcodes
+const SC_LINE_RE = /\[(callout|tipp|wichtig|info|ergebnis|inline-teaser|product-card|image|image-row|video|editorial|pricing-table|pricing-tier|product-grid|toc|table)[^\]]*\]|\[\/(?:callout|tipp|wichtig|info|ergebnis|product-card|image-row|editorial|pricing-table|pricing-tier|product-grid|table)\]/i;
+
+function updateGutter(val) {
+  const ta    = document.getElementById('editor');
+  const gutter = document.getElementById('editor-gutter');
+  if (!gutter) return;
+
+  const lineH   = parseFloat(getComputedStyle(ta).lineHeight) || 21;
+  const padTop  = parseFloat(getComputedStyle(ta).paddingTop)  || 20;
+  const lines   = val.split('\n');
+  const marks   = [];
+
+  lines.forEach((line, i) => {
+    if (SC_LINE_RE.test(line)) {
+      marks.push(`<div class="gutter-mark" style="top:${padTop + i * lineH}px;height:${lineH}px;"></div>`);
+    }
+  });
+
+  gutter.style.height = ta.scrollHeight + 'px';
+  gutter.innerHTML = marks.join('');
+  syncGutter();
+}
+
+function syncGutter() {
+  const ta     = document.getElementById('editor');
+  const gutter = document.getElementById('editor-gutter');
+  if (gutter) gutter.style.transform = `translateY(-${ta.scrollTop}px)`;
+}
+
+function updateCharCount() {
+  const val   = document.getElementById('editor').value;
+  const chars = val.length;
+  const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+  document.getElementById('char-count').textContent = chars.toLocaleString('de') + ' Zeichen';
+  document.getElementById('word-count').textContent = words.toLocaleString('de') + ' Wörter';
+}
+
+// =====================================================
+// EXPORT
+// =====================================================
+
+function exportHTMLOnly() {
+  const val = document.getElementById('editor').value;
+  if (!val.trim()) { showToast('Kein Inhalt vorhanden.'); return; }
+  const html = parseShortcodes(val, true); // forExport=true → real YouTube iframes
+  // Nur HTML, kein eingebettetes CSS — benötigt ofera-components.css als Shopify-Asset
+  navigator.clipboard.writeText(html).then(() => {
+    showToast('✅ Nur HTML kopiert — ofera-components.css muss als Shopify-Asset eingebunden sein.');
+  }).catch(() => {
+    const el = document.createElement('textarea');
+    el.value = html;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('✅ Nur HTML kopiert!');
+  });
+}
+
+function clearEditor() {
+  if (!document.getElementById('editor').value.trim() || confirm('Editor-Inhalt leeren?')) {
+    document.getElementById('editor').value = '';
+    applyFrontmatter({});
+    updatePreview();
+    updateCharCount();
+  }
+}
+
+// =====================================================
+// MODALS
+// =====================================================
+
+function openModal(name) {
+  // Reset all fields when opened fresh (not in edit mode)
+  if (_currentEditIdx < 0) {
+    const modal = document.getElementById('modal-' + name);
+    if (modal) {
+      modal.querySelectorAll('input[type="text"], textarea').forEach(el => el.value = '');
+      modal.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+      modal.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+    }
+  }
+  document.getElementById('modal-' + name).classList.add('active');
+  // Post-open init for modals with dynamic sections
+  if (name === 'pricing') updatePricingTiers();
+  if (name === 'grid')    updateProductGridCols();
+  if (name === 'imgrow')  updateImageRowCols();
+}
+
+function closeModal(name) {
+  const el = document.getElementById('modal-' + name);
+  if (!el) return;
+  el.classList.remove('active');
+  // Always reset edit state and button label when any modal closes
+  if (_currentEditIdx >= 0) {
+    resetModalBtn(name);   // resets label + _currentEditIdx
+  }
+}
+
+// Single consolidated overlay click handler
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  // Track where mousedown started — only close if drag began on the overlay,
+  // not if user selected text inside the modal and released outside.
+  let _downOnOverlay = false;
+  el.addEventListener('mousedown', e => { _downOnOverlay = e.target === el; });
+  el.addEventListener('click', e => {
+    if (e.target !== el || !_downOnOverlay) return;
+    const name = el.id.replace('modal-', '');
+    closeModal(name);
+  });
+});
+
+// Escape closes all open modals cleanly
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => {
+      const name = m.id.replace('modal-', '');
+      closeModal(name);
+    });
+  }
+});
+
+function v(id) { return document.getElementById(id).value; }
+
+function insertAtCursor(text) {
+  const ta = document.getElementById('editor');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const before = ta.value.substring(0, s);
+  const after  = ta.value.substring(e);
+  const pre  = (s > 0 && !before.endsWith('\n\n')) ? '\n\n' : '';
+  const post = '\n\n';
+  ta.value = before + pre + text + post + after;
+  ta.selectionStart = ta.selectionEnd = s + pre.length + text.length + post.length;
+  ta.focus();
+  updatePreview();
+  updateCharCount();
+}
+
+// =====================================================
+// INSERT FUNCTIONS
+// =====================================================
+
+function _commitSC(modalId, sc) {
+  if (_currentEditIdx >= 0) {
+    finishEdit(sc);
+  } else {
+    insertAtCursor(sc);
+  }
+  resetModalBtn(modalId);
+  closeModal(modalId);
+}
+
+function insertCallout() {
+  const text = v('c-text');
+  if (!text.trim()) { alert('Bitte Text eingeben.'); return; }
+  const color = v('c-color');
+  const title = v('c-title');
+  const titleAttr = title ? ` title="${title}"` : '';
+  _commitSC('callout', `[callout color="${color}"${titleAttr}]${text}[/callout]`);
+  if (_currentEditIdx < 0) {
+    document.getElementById('c-title').value = '';
+    document.getElementById('c-text').value = '';
+  }
+}
+
+function insertTeaser() {
+  if (!v('t-title').trim()) { alert('Bitte Titel eingeben.'); return; }
+  let a = `type="${v('t-type')}"`;
+  if (v('t-label')) a += ` label="${v('t-label')}"`;
+  a += ` title="${v('t-title')}"`;
+  if (v('t-sub'))   a += ` sub="${v('t-sub')}"`;
+  if (v('t-cta'))   a += ` cta="${v('t-cta')}"`;
+  a += ` url="${v('t-url') || '#'}"`;
+  _commitSC('teaser', `[inline-teaser ${a}]`);
+}
+
+function insertProductCard() {
+  if (!v('pc-title').trim()) { alert('Bitte Titel eingeben.'); return; }
+  let a = `type="${v('pc-type')}"`;
+  if (v('pc-label'))     a += ` label="${v('pc-label')}"`;
+  if (v('pc-price'))     a += ` price="${v('pc-price')}"`;
+  if (v('pc-badge'))     a += ` badge="${v('pc-badge')}"`;
+  if (v('pc-highlight')) a += ` highlight="${v('pc-highlight')}"`;
+  if (v('pc-image'))     a += ` image="${v('pc-image')}"`;
+  a += ` title="${v('pc-title')}" cta="${v('pc-cta')||'Zum Produkt'}" url="${v('pc-url')||'#'}"`;
+  const b = v('pc-benefits') || '- Benefit 1\n- Benefit 2';
+  _commitSC('pcard', `[product-card ${a}]\n${b}\n[/product-card]`);
+}
+
+function insertImage() {
+  if (!v('i-src').trim()) { alert('Bitte Bild-URL eingeben.'); return; }
+  let a = `src="${v('i-src')}"`;
+  if (v('i-alt'))     a += ` alt="${v('i-alt')}"`;
+  if (v('i-title'))   a += ` title="${v('i-title')}"`;
+  if (v('i-caption')) a += ` caption="${v('i-caption')}"`;
+  a += ` size="${v('i-size')}"`;
+  _commitSC('image', `[image ${a}]`);
+}
+
+function insertVideo() {
+  if (!v('v-url').trim()) { alert('Bitte YouTube-URL eingeben.'); return; }
+  let a = `url="${v('v-url')}"`;
+  if (v('v-title'))   a += ` title="${v('v-title')}"`;
+  if (v('v-caption')) a += ` caption="${v('v-caption')}"`;
+  _commitSC('video', `[video ${a}]`);
+}
+
+function insertEditorial() {
+  if (!v('e-title').trim()) { alert('Bitte Titel eingeben.'); return; }
+  let a = `type="${v('e-type')}"`;
+  if (v('e-badge'))      a += ` badge="${v('e-badge')}"`;
+  a += ` title="${v('e-title')}"`;
+  if (v('e-subtitle'))   a += ` subtitle="${v('e-subtitle')}"`;
+  if (v('e-image'))      a += ` image="${v('e-image')}"`;
+  if (v('e-social'))     a += ` social-proof="${v('e-social')}"`;
+  if (v('e-price'))      a += ` price="${v('e-price')}"`;
+  if (v('e-price-note')) a += ` price-note="${v('e-price-note')}"`;
+  if (v('e-cta') || v('e-url')) a += ` cta="${v('e-cta')||'Mehr erfahren'}" url="${v('e-url')||'#'}"`;
+  const body = v('e-body').trim();
+  _commitSC('editorial', `[editorial ${a}]\n${body}\n[/editorial]`);
+}
+
+function updatePricingTiers() {
+  const cols = parseInt(document.getElementById('pr-cols').value);
+  document.getElementById('pr-tier-3-section').style.display = cols === 3 ? '' : 'none';
+}
+
+function insertPricingTable() {
+  const cols = parseInt(v('pr-cols'));
+  const type = v('pr-type');
+
+  const tierLabel = v('pr-tier-label').trim();
+  function buildTier(n) {
+    const name  = v(`pr-t${n}-name`).trim()  || `Tier ${n}`;
+    const price = v(`pr-t${n}-price`).trim() || 'XX€';
+    const note  = v(`pr-t${n}-note`).trim();
+    const badge = v(`pr-t${n}-badge`).trim();
+    const hlVal = (document.getElementById(`pr-t${n}-hl`) || {value:''}).value;
+    const featsRaw = v(`pr-t${n}-features`).trim();
+    const feats = featsRaw
+      ? featsRaw.split('\n').map(l => {
+          l = l.trim(); return l ? `    ${l.startsWith('-') ? l : '- ' + l}` : null;
+        }).filter(Boolean).join('\n')
+      : '';
+
+    const image = v(`pr-t${n}-image`).trim();
+    let a = `tier="${name}" price="${price}"`;
+    if (tierLabel)        a += ` label="${tierLabel}"`;
+    if (note)             a += ` price-note="${note}"`;
+    if (hlVal === 'true') a += ` highlight="true"`;
+    if (badge)            a += ` badge="${badge}"`;
+    if (image)            a += ` image="${image}"`;
+    a += ` cta="${v(`pr-t${n}-cta`).trim() || 'Jetzt kaufen'}" url="${v(`pr-t${n}-url`).trim() || '#'}"`;
+    return `  [pricing-tier ${a}]\n${feats}\n  [/pricing-tier]`;
+  }
+
+  const tiers = [];
+  for (let i = 1; i <= cols; i++) tiers.push(buildTier(i));
+
+  _commitSC('pricing', `[pricing-table cols="${cols}" type="${type}"]\n${tiers.join('\n\n')}\n[/pricing-table]`);
+}
+
+function updateProductGridCols() {
+  const cols = parseInt(document.getElementById('g-cols').value);
+  document.getElementById('g-prod-3-section').style.display = cols === 3 ? '' : 'none';
+}
+
+function insertProductGrid() {
+  const cols = parseInt(v('g-cols'));
+  const type = v('g-type');
+
+  function buildCard(n) {
+    const title   = v(`g-p${n}-title`).trim()  || `Produkt ${n}`;
+    const label   = v(`g-p${n}-label`).trim();
+    const price   = v(`g-p${n}-price`).trim();
+    const badge   = v(`g-p${n}-badge`).trim();
+    const image   = v(`g-p${n}-image`).trim();
+    const cta     = v(`g-p${n}-cta`).trim()    || 'Zum Produkt';
+    const url     = v(`g-p${n}-url`).trim()    || '#';
+    const hl      = v(`g-p${n}-hl`);
+    const bfRaw   = v(`g-p${n}-benefits`).trim();
+    const benefits = bfRaw
+      ? bfRaw.split('\n').map(l => {
+          l = l.trim(); return l ? `    ${l.startsWith('-') ? l : '- ' + l}` : null;
+        }).filter(Boolean).join('\n')
+      : '    - Feature 1\n    - Feature 2';
+
+    let a = `type="${type}"`;
+    if (hl === 'true') a += ` highlight="true"`;
+    if (badge)  a += ` badge="${badge}"`;
+    if (label)  a += ` label="${label}"`;
+    a += ` title="${title}"`;
+    if (price)  a += ` price="${price}"`;
+    if (image)  a += ` image="${image}"`;
+    a += ` cta="${cta}" url="${url}"`;
+    return `  [product-card ${a}]\n${benefits}\n  [/product-card]`;
+  }
+
+  const cards = [];
+  for (let i = 1; i <= cols; i++) cards.push(buildCard(i));
+  _commitSC('grid', `[product-grid cols="${cols}"]\n${cards.join('\n\n')}\n[/product-grid]`);
+}
+
+function insertTOCFromModal() {
+  const content = document.getElementById('editor').value;
+  const headings = collectHeadings(content);
+  if (!headings.length) {
+    showToast('Keine ## Überschriften gefunden — füge zuerst ## Überschriften hinzu.', 3500);
+    return;
+  }
+  const title = document.getElementById('toc-title').value.trim();
+  const depth = document.getElementById('toc-depth').value;
+  let sc = '[toc';
+  if (depth !== '2') sc += ` depth=${depth}`;
+  if (title) sc += ` title="${title}"`;
+  sc += ']';
+  _commitSC('toc', sc);
+}
+
+function prefillTable(sc) {
+  let rowHeaders = false;
+  let tableMarkdown = sc.trim();
+  const wrapMatch = tableMarkdown.match(/^\[table row-headers\]([\s\S]*?)\[\/table\]$/i);
+  if (wrapMatch) { rowHeaders = true; tableMarkdown = wrapMatch[1].trim(); }
+  document.getElementById('tbl-row-headers').checked = rowHeaders;
+
+  const lines = tableMarkdown.split('\n').map(l => l.trim()).filter(Boolean);
+  if (lines.length < 3) return;
+  const parseRow = l => l.slice(1,-1).split('|').map(c => c.trim());
+  const headers  = parseRow(lines[0]);
+  const dataRows = lines.slice(2).map(parseRow);
+  const cols = headers.length;
+  const rows = dataRows.length;
+  const colSel = document.getElementById('tbl-cols');
+  const rowSel = document.getElementById('tbl-rows');
+  // Set closest available option
+  [...colSel.options].reduce((best, o) => Math.abs(parseInt(o.value)-cols) < Math.abs(parseInt(best.value)-cols) ? o : best, colSel.options[0]).selected = true;
+  [...rowSel.options].reduce((best, o) => Math.abs(parseInt(o.value)-rows) < Math.abs(parseInt(best.value)-rows) ? o : best, rowSel.options[0]).selected = true;
+  buildTableGrid();
+  headers.forEach((h, c) => { const el = document.getElementById(`tbl-h-${c}`); if (el) el.value = h; });
+  dataRows.forEach((row, r) => row.forEach((cell, c) => { const el = document.getElementById(`tbl-d-${r}-${c}`); if (el) el.value = cell; }));
+}
+
+function openTableModal() {
+  openModal('table');
+  buildTableGrid();
+}
+
+function buildTableGrid() {
+  const cols = parseInt(document.getElementById('tbl-cols').value);
+  const rows = parseInt(document.getElementById('tbl-rows').value);
+  const grid = document.getElementById('tbl-grid');
+  grid.innerHTML = '';
+  grid.style.gridTemplateColumns = `repeat(${cols}, minmax(80px, 1fr))`;
+
+  const headerDefaults = ['Bezeichnung','Wert','Beschreibung','Einheit','Hinweis','Kategorie'];
+
+  // Header row
+  for (let c = 0; c < cols; c++) {
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'tbl-header';
+    inp.placeholder = headerDefaults[c] || `Spalte ${c+1}`;
+    inp.id = `tbl-h-${c}`;
+    inp.title = `Überschrift Spalte ${c+1}`;
+    grid.appendChild(inp);
+  }
+
+  // Data rows
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.placeholder = '–';
+      inp.id = `tbl-d-${r}-${c}`;
+      grid.appendChild(inp);
+    }
+  }
+}
+
+function insertTableFromModal() {
+  const cols = parseInt(document.getElementById('tbl-cols').value);
+  const rows = parseInt(document.getElementById('tbl-rows').value);
+
+  const headers = [];
+  for (let c = 0; c < cols; c++) {
+    headers.push((document.getElementById(`tbl-h-${c}`)?.value || '').trim());
+  }
+
+  const dataRows = [];
+  for (let r = 0; r < rows; r++) {
+    const row = [];
+    for (let c = 0; c < cols; c++) {
+      row.push((document.getElementById(`tbl-d-${r}-${c}`)?.value || '').trim());
+    }
+    dataRows.push(row);
+  }
+
+  // Column widths based on actual content
+  const widths = headers.map((h, i) => {
+    let w = Math.max(h.length, 3);
+    dataRows.forEach(r => { w = Math.max(w, (r[i] || '').length); });
+    return w;
+  });
+
+  const pad = (s, w) => s + ' '.repeat(Math.max(0, w - s.length));
+  const headerRow  = '| ' + headers.map((h, i) => pad(h, widths[i])).join(' | ') + ' |';
+  const sepRow     = '| ' + widths.map(w => '-'.repeat(w)).join(' | ') + ' |';
+  const dataRowStr = dataRows.map(r => '| ' + r.map((c, i) => pad(c, widths[i])).join(' | ') + ' |');
+
+  const rowHeaders = document.getElementById('tbl-row-headers').checked;
+  const tableMarkdown = [headerRow, sepRow, ...dataRowStr].join('\n');
+  const sc = rowHeaders ? `[table row-headers]\n${tableMarkdown}\n[/table]` : tableMarkdown;
+  _commitSC('table', sc);
+  showToast(`✅ Tabelle eingefügt (${cols} Spalten · ${rows} Zeilen)`);
+}
+
+// =====================================================
+// INLINE FORMATTING (Bold, Italic, Strikethrough, Link)
+// Block formatting (H2, H3, Align, HR)
+// =====================================================
+
+function wrapSelection(before, after) {
+  const ta = document.getElementById('editor');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const selected = ta.value.substring(s, e);
+  const replacement = before + (selected || 'Text') + after;
+  ta.value = ta.value.substring(0, s) + replacement + ta.value.substring(e);
+  // Re-select the inner text (excluding the markers)
+  ta.selectionStart = s + before.length;
+  ta.selectionEnd   = s + before.length + (selected || 'Text').length;
+  ta.focus();
+  updatePreview();
+  updateCharCount();
+}
+
+function openLinkModal() {
+  const ta = document.getElementById('editor');
+  const selected = ta.value.substring(ta.selectionStart, ta.selectionEnd).trim();
+  document.getElementById('link-text').value = selected;
+  document.getElementById('link-url').value  = '';
+  document.getElementById('link-hint').textContent = '';
+  openModal('link');
+  // Focus URL field if text already filled, otherwise text field
+  setTimeout(() => {
+    document.getElementById(selected ? 'link-url' : 'link-text').focus();
+  }, 50);
+}
+
+function updateLinkHint() {
+  const url  = document.getElementById('link-url').value.trim();
+  const hint = document.getElementById('link-hint');
+  if (!url) { hint.textContent = ''; return; }
+  if (/^https?:\/\//i.test(url)) {
+    hint.innerHTML = '↗ Externer Link — öffnet im <strong>neuen Tab</strong> (automatisch)';
+    hint.style.color = '#2563eb';
+  } else if (url.startsWith('/')) {
+    hint.innerHTML = '→ Interner Link — öffnet im <strong>gleichen Tab</strong>';
+    hint.style.color = '#094B20';
+  } else {
+    hint.innerHTML = '⚠ Beginnt weder mit / noch mit https:// — bitte prüfen';
+    hint.style.color = '#d97706';
+  }
+}
+
+function insertLink() {
+  const text = document.getElementById('link-text').value.trim();
+  const url  = document.getElementById('link-url').value.trim();
+  if (!url) { alert('Bitte URL eingeben.'); return; }
+
+  const ta = document.getElementById('editor');
+  const s  = ta.selectionStart, e = ta.selectionEnd;
+  const selected = ta.value.substring(s, e).trim();
+  const linkText = text || selected || 'Link';
+  const markdown = `[${linkText}](${url})`;
+
+  // Replace selection or insert at cursor
+  ta.value = ta.value.substring(0, s) + markdown + ta.value.substring(e);
+  ta.selectionStart = ta.selectionEnd = s + markdown.length;
+  ta.focus();
+  updatePreview();
+  updateCharCount();
+  closeModal('link');
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  const ta = document.getElementById('editor');
+  if (document.activeElement !== ta) return;
+  const mod = e.ctrlKey || e.metaKey;
+  if (mod && e.key === 'b') { e.preventDefault(); wrapSelection('**', '**'); }
+  if (mod && e.key === 'i') { e.preventDefault(); wrapSelection('*', '*'); }
+  if (mod && e.key === 'k') { e.preventDefault(); openLinkModal(); }
+});
+
+// Insert H2 or H3 at start of current line (or around selection)
+function insertHeading(level) {
+  const ta     = document.getElementById('editor');
+  const prefix = '#'.repeat(level) + ' ';
+  const s      = ta.selectionStart;
+  const val    = ta.value;
+
+  // Find start of current line
+  const lineStart = val.lastIndexOf('\n', s - 1) + 1;
+  const lineEnd   = val.indexOf('\n', s);
+  const line      = val.substring(lineStart, lineEnd === -1 ? val.length : lineEnd);
+
+  // Toggle: if already that heading level, remove it; otherwise set it
+  const existingMatch = line.match(/^(#{1,3})\s/);
+  let newLine;
+  if (existingMatch && existingMatch[1] === '#'.repeat(level)) {
+    newLine = line.replace(/^#{1,3}\s/, ''); // remove heading
+  } else {
+    newLine = line.replace(/^#{1,3}\s/, '') ; // strip existing heading first
+    newLine = prefix + newLine;
+  }
+
+  const end = lineEnd === -1 ? val.length : lineEnd;
+  ta.value = val.substring(0, lineStart) + newLine + val.substring(end);
+  ta.selectionStart = ta.selectionEnd = lineStart + newLine.length;
+  ta.focus();
+  updatePreview();
+  updateCharCount();
+}
+
+// Align current block (wraps selection or current paragraph)
+function alignBlock(dir) {
+  const ta  = document.getElementById('editor');
+  const s   = ta.selectionStart;
+  const e   = ta.selectionEnd;
+  const val = ta.value;
+  const selected = val.substring(s, e).trim();
+
+  if (!selected) { showToast('Text markieren, dann Ausrichtung wählen.'); return; }
+
+  // Strip existing alignment wrappers if present
+  const stripped = selected
+    .replace(/^\[(center|right)\]\n?/i, '')
+    .replace(/\n?\[\/(center|right)\]$/i, '');
+
+  let result;
+  if (dir === 'left') {
+    result = stripped; // left = remove wrapper
+  } else {
+    result = `[${dir}]\n${stripped}\n[/${dir}]`;
+  }
+
+  ta.value = val.substring(0, s) + result + val.substring(e);
+  ta.selectionStart = s;
+  ta.selectionEnd   = s + result.length;
+  ta.focus();
+  updatePreview();
+  updateCharCount();
+}
+
+// Insert horizontal rule
+function insertHR() {
+  insertAtCursor('---');
+}
+
+function openHeadingModal(level) {
+  document.getElementById('heading-level').value = level;
+  const iconName = level === 2 ? 'heading-2' : 'heading-3';
+  document.getElementById('heading-modal-title').innerHTML = `<i data-lucide="${iconName}"></i> H${level} Überschrift`;
+  if (typeof lucide !== 'undefined') lucide.createIcons(); // re-init so heading icon renders
+  // Pre-fill with selected text if any
+  const ta = document.getElementById('editor');
+  const sel = ta.value.substring(ta.selectionStart, ta.selectionEnd).trim();
+  document.getElementById('heading-text').value = sel || '';
+  openModal('heading');
+  // Focus input after modal opens
+  setTimeout(() => document.getElementById('heading-text').focus(), 50);
+}
+
+function insertHeadingFromModal() {
+  const text  = document.getElementById('heading-text').value.trim();
+  const level = parseInt(document.getElementById('heading-level').value);
+  if (!text) { document.getElementById('heading-text').focus(); return; }
+  const prefix = '#'.repeat(level) + ' ';
+  insertAtCursor(`\n${prefix}${text}\n`);
+  document.getElementById('heading-text').value = '';
+  closeModal('heading');
+}
+
+// =====================================================
+// SAVE & LOAD SOURCE
+// =====================================================
+
+function openSaveModal() {
+  const content = document.getElementById('editor').value;
+  if (!content.trim()) { showToast('Kein Inhalt zum Speichern.'); return; }
+  openModal('save');
+  updateSavePreview();
+}
+
+function updateSavePreview() {
+  const slug = document.getElementById('save-slug').value.trim() || 'seite';
+  const lang = document.getElementById('save-lang').value;
+  document.getElementById('save-preview-name').textContent = `${slug}-${lang}.txt`;
+}
+
+// Live update filename preview
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('save-slug').addEventListener('input', updateSavePreview);
+  document.getElementById('save-lang').addEventListener('change', updateSavePreview);
+});
+
+function buildFrontmatter() {
+  const fields = {
+    'title':            document.getElementById('meta-title-h1').value.trim(),
+    'excerpt':          document.getElementById('meta-excerpt').value.trim(),
+    'meta-title':       document.getElementById('meta-seo-title').value.trim(),
+    'meta-description': document.getElementById('meta-description').value.trim(),
+    'url-handle':       document.getElementById('meta-url-handle').value.trim(),
+    'focus-keyword':    document.getElementById('meta-focus-kw').value.trim(),
+  };
+  const lines = Object.entries(fields).filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
+  return lines.length ? `---\n${lines.join('\n')}\n---\n\n` : '';
+}
+
+async function doSaveSource() {
+  const content = document.getElementById('editor').value;
+  let slug = document.getElementById('save-slug').value.trim();
+  const lang = document.getElementById('save-lang').value;
+
+  if (!slug) {
+    const urlHandle = document.getElementById('meta-url-handle').value.trim();
+    if (urlHandle) {
+      slug = urlHandle.slice(0, 60);
+    } else {
+      const m = content.match(/^#{1,3}\s+(.+)$/m);
+      slug = m ? slugify(m[1]).slice(0, 60) : 'seite';
+    }
+  }
+
+  const filename = `${slug}-${lang}.txt`;
+  const full = buildFrontmatter() + content;
+
+  // Native "Speichern unter" Dialog (Chrome/Edge) – nur bei http/https verfügbar, nicht file://
+  const isSecureContext = window.location.protocol === 'https:' || window.location.protocol === 'http:';
+  if (window.showSaveFilePicker && isSecureContext) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: 'Text-Datei', accept: { 'text/plain': ['.txt'] } }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(full);
+      await writable.close();
+      closeModal('save');
+      showToast(`✅ ${filename} gespeichert`);
+      return;
+    } catch (e) {
+      if (e.name === 'AbortError') return; // Nutzer hat abgebrochen
+      // Fallback auf Download bei unerwartetem Fehler
+    }
+  }
+
+  // Fallback: klassischer Download
+  const blob = new Blob([full], { type: 'text/plain;charset=utf-8' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+  closeModal('save');
+  showToast(`✅ ${filename} gespeichert`);
+}
+
+function loadSource() {
+  document.getElementById('file-loader').value = ''; // reset so same file can be re-loaded
+  document.getElementById('file-loader').click();
+}
+
+function parseFrontmatter(raw) {
+  // Returns { meta: {key: value}, body: string }
+  const fm = { meta: {}, body: raw };
+  if (!raw.startsWith('---\n')) return fm;
+  const end = raw.indexOf('\n---\n', 4);
+  if (end === -1) return fm;
+  const block = raw.slice(4, end);
+  block.split('\n').forEach(line => {
+    const sep = line.indexOf(': ');
+    if (sep > 0) fm.meta[line.slice(0, sep).trim()] = line.slice(sep + 2).trim();
+  });
+  fm.body = raw.slice(end + 5).replace(/^\n/, '');
+  return fm;
+}
+
+function applyFrontmatter(meta) {
+  const set = (id, key) => {
+    const el = document.getElementById(id);
+    if (el) el.value = meta[key] || '';
+  };
+  set('meta-title-h1',   'title');
+  set('meta-excerpt',    'excerpt');
+  set('meta-seo-title',  'meta-title');
+  set('meta-description','meta-description');
+  set('meta-url-handle', 'url-handle');
+  set('meta-focus-kw',   'focus-keyword');
+  updateMetaChars();
+  updateSEO();
+  updateArticleTitle();
+  // Auto-open panel if any meta field was populated
+  const hasData = Object.keys(meta).length > 0;
+  if (hasData) {
+    document.getElementById('meta-panel').classList.add('open');
+    document.getElementById('btn-meta-toggle').classList.add('active');
+  }
+}
+
+function onFileLoaded(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const raw    = ev.target.result;
+    const editor = document.getElementById('editor');
+
+    if (editor.value.trim()) {
+      if (!confirm(`Aktuellen Inhalt durch "${file.name}" ersetzen?`)) return;
+    }
+
+    const { meta, body } = parseFrontmatter(raw);
+    editor.value = body;
+    applyFrontmatter(meta);
+    updatePreview();
+    updateCharCount();
+
+    // Try to detect language from filename (e.g. artikel-de.txt)
+    const langMatch = file.name.match(/-(de|en|fr)\.txt$/i);
+    const langHint  = langMatch ? langMatch[1].toUpperCase() : null;
+    showToast(`✅ ${file.name} geladen${langHint ? ` (${langHint})` : ''}`);
+  };
+  reader.onerror = () => showToast('Fehler beim Lesen der Datei.');
+  reader.readAsText(file, 'UTF-8');
+}
+
+// =====================================================
+// TOAST
+// =====================================================
+
+function showToast(msg, ms = 3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
+}
+
+// =====================================================
+// META PANEL
+// =====================================================
+
+function updateArticleTitle() {
+  const el = document.getElementById('studio-article-title');
+  if (!el) return;
+  const h1 = (document.getElementById('meta-title-h1').value || '').trim();
+  if (h1) {
+    el.textContent = h1;
+    el.classList.remove('empty');
+  } else {
+    el.textContent = 'Kein Titel';
+    el.classList.add('empty');
+  }
+}
+
+function toggleMetaPanel() {
+  const panel = document.getElementById('meta-panel');
+  const btn   = document.getElementById('btn-meta-toggle');
+  const open  = panel.classList.toggle('open');
+  btn.classList.toggle('active', open);
+}
+
+function updateMetaChars() {
+  const mtLen = (document.getElementById('meta-seo-title').value || '').length;
+  const mdLen = (document.getElementById('meta-description').value || '').length;
+
+  const ccMt = document.getElementById('cc-meta-title');
+  ccMt.textContent = `${mtLen} / 70`;
+  ccMt.className = 'char-counter' + (mtLen > 70 ? ' over' : mtLen >= 60 ? ' warn' : mtLen > 0 ? ' good' : '');
+
+  const ccMd = document.getElementById('cc-meta-desc');
+  ccMd.textContent = `${mdLen} / 160`;
+  ccMd.className = 'char-counter' + (mdLen > 160 ? ' over' : mdLen >= 120 && mdLen <= 160 ? ' good' : mdLen > 0 ? ' warn' : '');
+}
+
+function updateSEO() {
+  const kw = (document.getElementById('meta-focus-kw').value || '').trim().toLowerCase();
+  if (!kw) {
+    // No keyword: reset all dots to grey
+    ['seo-h1','seo-mt','seo-md','seo-url','seo-fp','seo-den','seo-mtl','seo-mdl'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.className = 'seo-dot';
+    });
+    document.getElementById('seo-den-val').textContent = '–';
+    document.getElementById('seo-mtl-val').textContent = '–';
+    document.getElementById('seo-mdl-val').textContent = '–';
+    return;
+  }
+
+  const h1  = (document.getElementById('meta-title-h1').value || '').toLowerCase();
+  const mt  = (document.getElementById('meta-seo-title').value || '').toLowerCase();
+  const md  = (document.getElementById('meta-description').value || '').toLowerCase();
+  const url = (document.getElementById('meta-url-handle').value || '').toLowerCase();
+  const body = (document.getElementById('editor').value || '').toLowerCase();
+
+  // First paragraph: text up to first blank line, strip shortcodes
+  const firstPara = body.split(/\n\s*\n/)[0].replace(/\[[^\]]+\]/g, '').toLowerCase();
+
+  // Keyword density in full body
+  const bodyWords = body.replace(/\[[^\]]+\]/g, ' ').replace(/[^a-zäöüß\s]/gi, ' ').trim().split(/\s+/).filter(Boolean);
+  const kwWords = kw.split(/\s+/);
+  let kwCount = 0;
+  for (let i = 0; i <= bodyWords.length - kwWords.length; i++) {
+    if (kwWords.every((w, j) => bodyWords[i + j] === w)) kwCount++;
+  }
+  const density = bodyWords.length > 0 ? (kwCount / bodyWords.length * 100) : 0;
+
+  const setDot = (id, status) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('green', 'yellow', 'red');
+    if (status) el.classList.add(status);
+  };
+
+  setDot('seo-h1',  h1.includes(kw)  ? 'green' : 'red');
+  setDot('seo-mt',  mt.includes(kw)  ? 'green' : 'red');
+  setDot('seo-md',  md.includes(kw)  ? 'green' : 'red');
+  setDot('seo-url', url.includes(kw.replace(/\s+/g, '-')) || url.includes(kw) ? 'green' : 'yellow');
+  setDot('seo-fp',  firstPara.includes(kw) ? 'green' : 'yellow');
+
+  document.getElementById('seo-den-val').textContent = density.toFixed(1) + '%';
+  setDot('seo-den', density >= 0.5 && density <= 2.5 ? 'green' : density > 0 ? 'yellow' : 'red');
+
+  // Meta title length
+  const mtLen = mt.length;
+  const mtlVal = document.getElementById('seo-mtl-val');
+  mtlVal.textContent = mtLen ? `${mtLen} Zeichen` : '–';
+  setDot('seo-mtl', mtLen > 0 && mtLen <= 70 ? 'green' : mtLen > 70 ? 'red' : '');
+
+  // Meta description length
+  const mdLen = md.length;
+  const mdlVal = document.getElementById('seo-mdl-val');
+  mdlVal.textContent = mdLen ? `${mdLen} Zeichen` : '–';
+  setDot('seo-mdl', mdLen >= 120 && mdLen <= 160 ? 'green' : mdLen > 0 ? 'yellow' : '');
+}
+
+// LISTEN EINFÜGEN
+// =====================================================
+
+function insertList(type) {
+  const ta = document.getElementById('editor');
+  const start = ta.selectionStart;
+  const end   = ta.selectionEnd;
+  const val   = ta.value;
+
+  if (start === end) {
+    // Kein Selection: Präfix an aktuellen Zeilenanfang
+    const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+    const prefix = type === 'ol' ? '1. ' : '- ';
+    ta.value = val.substring(0, lineStart) + prefix + val.substring(lineStart);
+    ta.selectionStart = ta.selectionEnd = start + prefix.length;
+  } else {
+    // Selection: jede markierte Zeile mit Präfix versehen
+    const selected = val.substring(start, end);
+    let counter = 0;
+    const prefixed = selected.split('\n').map(line =>
+      type === 'ol' ? `${++counter}. ${line}` : `- ${line}`
+    ).join('\n');
+    ta.value = val.substring(0, start) + prefixed + val.substring(end);
+    ta.selectionStart = start;
+    ta.selectionEnd   = start + prefixed.length;
+  }
+  ta.focus();
+  updatePreview();
+  updateCharCount();
+}
+
+
+
+// Icons rendern (safe – CDN könnte langsam sein)
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof lucide !== 'undefined') lucide.createIcons();
+});
+
+</script>
+</body>
+</html>
