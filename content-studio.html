@@ -1942,7 +1942,7 @@ function prefillImageRow(sc) {
   if (colsSel) colsSel.value = cols;
   updateImageRowCols();
 
-  const imgRe = /\[image([^\]]*)\]/gi;
+  const imgRe = /\[image(?!-row)([^\]]*)\]/gi;
   let n = 0;
   let m;
   while ((m = imgRe.exec(sc)) !== null && n < 3) {
