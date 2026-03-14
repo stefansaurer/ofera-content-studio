@@ -1611,6 +1611,9 @@ function editComponent(idx) {
   if (!entry) return;
   _currentEditIdx = idx;
   const { type, sc } = entry;
+  const typeLabel = { callout:'Callout', teaser:'Inline Teaser', pcard:'Product Card',
+    image:'Bild', 'image-row':'Bildreihe', video:'Video', editorial:'Editorial',
+    'pricing-table':'Pricing Table', 'product-grid':'Product Grid', toc:'Inhaltsverzeichnis', table:'Tabelle' }[type] || type;
 
   const prefillMap = {
     callout:        () => prefillCallout(sc),
@@ -1628,7 +1631,12 @@ function editComponent(idx) {
 
   const fn = prefillMap[type];
   if (!fn) return;
-  fn();
+  const ok = fn();
+  if (!ok) {
+    showToast('Komponente konnte nicht sicher vorausgefüllt werden. Raw-Edit geöffnet.', 4200);
+    openRawEdit(typeLabel, sc);
+    return;
+  }
 
   // Update modal button label and open modal
   const modalId = { callout:'callout', teaser:'teaser', pcard:'pcard',
@@ -1703,14 +1711,17 @@ function saveRawEdit() {
 // =====================================================
 
 function prefillTOC(sc) {
+  sc = (sc || '').trim();
   const a = parseAttrs(sc.replace(/^\[toc/i, '').replace(/\]$/, ''));
   const titleEl = document.getElementById('toc-title');
   const depthEl = document.getElementById('toc-depth');
   if (titleEl) titleEl.value = a.title || '';
   if (depthEl) depthEl.value = a.depth === '3' ? '3' : '2';
+  return true;
 }
 
 function prefillCallout(sc) {
+  sc = (sc || '').trim();
   // New format: [callout color="green" title="..."]...[/callout]
   let m = sc.match(/^\[callout([^\]]*)\]([\s\S]*?)\[\/callout\]$/i);
   if (m) {
@@ -1718,20 +1729,22 @@ function prefillCallout(sc) {
     document.getElementById('c-color').value = a.color ? a.color.toLowerCase() : 'green';
     document.getElementById('c-title').value = a.title || '';
     document.getElementById('c-text').value  = m[2].trim();
-    return;
+    return true;
   }
   // Backward-compat: [tipp] [wichtig] [info] [ergebnis]
   m = sc.match(/^\[(tipp|wichtig|info|ergebnis)\]([\s\S]*?)\[\/\1\]$/i);
-  if (!m) return;
+  if (!m) return false;
   const legacyMap = { tipp: 'green', wichtig: 'orange', info: 'blue', ergebnis: 'green' };
   document.getElementById('c-color').value = legacyMap[m[1].toLowerCase()] || 'green';
   document.getElementById('c-title').value = '';
   document.getElementById('c-text').value  = m[2].trim();
+  return true;
 }
 
 function prefillTeaser(sc) {
+  sc = (sc || '').trim();
   const m = sc.match(/^\[inline-teaser([^\]]*)\]$/i);
-  if (!m) return;
+  if (!m) return false;
   const a = parseAttrs(m[1]);
   document.getElementById('t-type').value  = a.type  || 'shop';
   document.getElementById('t-label').value = a.label || '';
@@ -1739,11 +1752,13 @@ function prefillTeaser(sc) {
   document.getElementById('t-sub').value   = a.sub   || '';
   document.getElementById('t-cta').value   = a.cta   || '';
   document.getElementById('t-url').value   = a.url   || '';
+  return true;
 }
 
 function prefillProductCard(sc) {
+  sc = (sc || '').trim();
   const m = sc.match(/^\[product-card([^\]]*)\]([\s\S]*?)\[\/product-card\]$/i);
-  if (!m) return;
+  if (!m) return false;
   const a = parseAttrs(m[1]);
   document.getElementById('pc-type').value      = a.type      || 'shop';
   document.getElementById('pc-label').value     = a.label     || '';
@@ -1755,31 +1770,37 @@ function prefillProductCard(sc) {
   document.getElementById('pc-cta').value       = a.cta       || '';
   document.getElementById('pc-url').value       = a.url       || '';
   document.getElementById('pc-benefits').value  = m[2].trim();
+  return true;
 }
 
 function prefillImage(sc) {
+  sc = (sc || '').trim();
   const m = sc.match(/^\[image([^\]]*)\]$/i);
-  if (!m) return;
+  if (!m) return false;
   const a = parseAttrs(m[1]);
   document.getElementById('i-src').value     = a.src     || '';
   document.getElementById('i-alt').value     = a.alt     || '';
   document.getElementById('i-size').value    = a.size    || 'full';
   document.getElementById('i-title').value   = a.title   || '';
   document.getElementById('i-caption').value = a.caption || '';
+  return true;
 }
 
 function prefillVideo(sc) {
+  sc = (sc || '').trim();
   const m = sc.match(/^\[video([^\]]*)\]$/i);
-  if (!m) return;
+  if (!m) return false;
   const a = parseAttrs(m[1]);
   document.getElementById('v-url').value     = a.url     || '';
   document.getElementById('v-title').value   = a.title   || '';
   document.getElementById('v-caption').value = a.caption || '';
+  return true;
 }
 
 function prefillEditorial(sc) {
+  sc = (sc || '').trim();
   const m = sc.match(/^\[editorial([^\]]*)\]([\s\S]*)\[\/editorial\]$/i);
-  if (!m) return;
+  if (!m) return false;
   const a = parseAttrs(m[1]);
   const body = m[2].trim();
   document.getElementById('e-type').value       = a.type           || 'shop';
@@ -1793,11 +1814,13 @@ function prefillEditorial(sc) {
   document.getElementById('e-price-note').value = a['price-note']  || '';
   document.getElementById('e-cta').value        = a.cta            || '';
   document.getElementById('e-url').value        = a.url            || '';
+  return true;
 }
 
 function prefillPricingTable(sc) {
+  sc = (sc || '').trim();
   const outerM = sc.match(/\[pricing-table([^\]]*)\]/i);
-  if (!outerM) return;
+  if (!outerM) return false;
   const outerAttrs = parseAttrs(outerM[1]);
   const cols = Math.min(Math.max(parseInt(outerAttrs.cols || '2'), 2), 3);
   const colsSel = document.getElementById('pr-cols');
@@ -1834,11 +1857,13 @@ function prefillPricingTable(sc) {
       .filter(l => l.trim().startsWith('-')).map(l => l.trim()).join('\n');
     sv(`pr-t${n}-features`, feats);
   }
+  return true;
 }
 
 function prefillProductGrid(sc) {
+  sc = (sc || '').trim();
   const outerM = sc.match(/\[product-grid([^\]]*)\]/i);
-  if (!outerM) return;
+  if (!outerM) return false;
   const outerAttrs = parseAttrs(outerM[1]);
   const cols = Math.min(Math.max(parseInt(outerAttrs.cols || '2'), 2), 3);
   const colsSel = document.getElementById('g-cols');
@@ -1873,6 +1898,7 @@ function prefillProductGrid(sc) {
       .filter(l => l.trim().startsWith('-')).map(l => l.trim()).join('\n');
     sv(`g-p${n}-benefits`, benefits);
   }
+  return true;
 }
 
 function updateImageRowCols() {
@@ -1908,8 +1934,9 @@ function insertImageRow() {
 }
 
 function prefillImageRow(sc) {
+  sc = (sc || '').trim();
   const outerM = sc.match(/\[image-row([^\]]*)\]/i);
-  if (!outerM) return;
+  if (!outerM) return false;
   const cols = parseAttrs(outerM[1]).cols === '3' ? '3' : '2';
   const colsSel = document.getElementById('ir-cols');
   if (colsSel) colsSel.value = cols;
@@ -1927,6 +1954,7 @@ function prefillImageRow(sc) {
     sv(`ir-img${n}-title`, a.title   || '');
     sv(`ir-img${n}-cap`,   a.caption || '');
   }
+  return true;
 }
 
 // =====================================================
@@ -2270,6 +2298,7 @@ function insertTOCFromModal() {
 }
 
 function prefillTable(sc) {
+  sc = (sc || '').trim();
   let rowHeaders = false;
   let tableMarkdown = sc.trim();
   const wrapMatch = tableMarkdown.match(/^\[table row-headers\]([\s\S]*?)\[\/table\]$/i);
@@ -2277,7 +2306,7 @@ function prefillTable(sc) {
   document.getElementById('tbl-row-headers').checked = rowHeaders;
 
   const lines = tableMarkdown.split('\n').map(l => l.trim()).filter(Boolean);
-  if (lines.length < 3) return;
+  if (lines.length < 3) return false;
   const parseRow = l => l.slice(1,-1).split('|').map(c => c.trim());
   const headers  = parseRow(lines[0]);
   const dataRows = lines.slice(2).map(parseRow);
@@ -2291,6 +2320,7 @@ function prefillTable(sc) {
   buildTableGrid();
   headers.forEach((h, c) => { const el = document.getElementById(`tbl-h-${c}`); if (el) el.value = h; });
   dataRows.forEach((row, r) => row.forEach((cell, c) => { const el = document.getElementById(`tbl-d-${r}-${c}`); if (el) el.value = cell; }));
+  return true;
 }
 
 function openTableModal() {
