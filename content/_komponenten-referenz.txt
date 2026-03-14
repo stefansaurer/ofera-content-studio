@@ -1,0 +1,201 @@
+[toc title="Komponenten-Übersicht"]
+
+## Einleitung – alle Komponenten im Überblick
+
+Dies ist die **Komponenten-Referenz** des OFERA Content Studios. Sie zeigt alle verfügbaren Blöcke in einem einzigen Dokument. Importiere diese Datei über „Importieren" wenn du Syntax nachschauen oder etwas testen möchtest.
+
+Allgemeine Formatierungen funktionieren überall im Fließtext:
+- **fett** mit `**text**`
+- *kursiv* mit `*text*`
+- ~~durchgestrichen~~ mit `~~text~~`
+- [Linktext](url) für Links
+
+---
+
+## 01 · Inhaltsverzeichnis
+
+Wird am besten ganz oben im Artikel platziert. Liest alle `##`-Überschriften automatisch aus dem Artikel und generiert daraus eine nummerierte Linkliste mit Ankersprüngen. Der Inhalt der Box wird also nicht manuell eingegeben – er entsteht automatisch aus den Überschriften.
+
+Über den „✏ Inhaltsverzeichnis bearbeiten"-Button im Preview lassen sich Titel und Tiefe nachträglich anpassen.
+
+### Standard
+Titel "In diesem Artikel" wird automatisch generiert
+[toc]
+
+### Eigener Titel
+(z.B. für englische Artikel: „In this article")
+[toc title="In this article"]
+
+### Eigener Titel + H3 Unterüberschriften als eingerückte Einträge
+(z.B. für englische Artikel: „In this article")
+[toc title="In this Article" depth="3"]
+
+---
+
+## 02 · Callout Boxen
+
+Drei Typen für unterschiedliche Hinweise. Kurzform `[tipp]`, `[wichtig]`, `[info]`) oder ausführlich mit `color=`. Optionaler `title=` Parameter für eine fett gedruckte Überschrift.
+
+[tipp]Die ideale Zuchttemperatur liegt bei **20–25 °C**. In diesem Bereich entwickeln sich Mehlwürmer am schnellsten.[/tipp]
+
+[wichtig]Über **30 °C** steigt die Sterblichkeit stark an. Stelle die Box nie in direkte Sonne oder in die Nähe von Heizungen.[/wichtig]
+
+[info]Mehlwürmer brauchen **kein zusätzliches Wasser** – die Feuchtigkeit aus Gemüseresten wie Karotte oder Zucchini reicht vollständig aus.[/info]
+
+[callout color="gray"]Neutrale Info ohne Wertung – für allgemeine Hinweise geeignet.[/callout]
+
+[callout color="green" title="💡 Tipp"]Mit einem optionalen Titel wird die Box klarer. Emoji, Text oder beides – frei wählbar.[/callout]
+
+[callout color="orange" title="⚠️ Wichtig"]Der Titel ersetzt nicht den Text, sondern ergänzt ihn als fett gedruckte Überschrift.[/callout]
+
+[callout color="blue" title="ℹ️ Info"]Der Titel ersetzt nicht den Text, sondern ergänzt ihn als fett gedruckte Überschrift.[/callout]
+
+[callout color="gray" title="Neutral"]Der Titel ersetzt nicht den Text, sondern ergänzt ihn als fett gedruckte Überschrift.[/callout]
+
+---
+
+## 03 · Inline Teaser
+
+Kompakter Produkt- oder Kurs-Link direkt im Fließtext. Typ `shop` = grün, `digital` = dunkel.
+
+[inline-teaser type="shop" label="Produkt" title="Mehlwurm Farm" sub="Automatische Trennung aller Entwicklungsstadien · inkl. Anleitung" cta="Zum Produkt →" url="/products/mehlwurm-farm"]
+
+[inline-teaser type="digital" label="Online Kurs" title="DIY Zuchtbox Kurs" sub="49€ einmalig · Sofortiger Zugang" cta="Jetzt kaufen →" url="#"]
+
+---
+
+## 04 · Product Card
+
+Ausführliche Einzeldarstellung eines Produkts. Mit `highlight="true"` und `badge="..."` für Hervorhebung. Aufzählung zwischen den Tags wird als Feature-Liste gerendert.
+
+[product-card type="shop" label="Empfehlung" price="199,99€" badge="Beliebt" image="https://cdn.shopify.com/s/files/1/0577/6284/0770/files/ofera-mehlwurm-farm-mit-anleitung.png" title="Mehlwurm Farm" cta="Zum Produkt" url="/products/mehlwurm-farm"]
+- Automatische Trennung aller Entwicklungsstadien
+- Inkl. Schritt-für-Schritt Anleitung + Einführungsvideo
+- Modular erweiterbar – wächst mit der Zucht
+[/product-card]
+
+---
+
+## 05 · Product Grid
+
+Zwei oder drei Product Cards nebeneinander. `cols="2"` (Standard) oder `cols="3"`. Alle Attribute der Product Card funktionieren identisch.
+
+[product-grid cols="2"]
+  [product-card type="shop" label="Einzeln" title="Mehlwurm Farm" price="199,99€" image="https://cdn.shopify.com/s/files/1/0577/6284/0770/files/ofera-mehlwurm-farm-mit-anleitung.png" cta="Zum Produkt" url="/products/mehlwurm-farm"]
+    - Benefit 1
+    - Benefit 2
+    - Benefit 3
+  [/product-card]
+
+  [product-card type="shop" highlight="true" badge="Empfohlen" label="Komplettset" title="Mehlwurm Farm Komplettset" price="249,99€" image="https://ofera.at/cdn/shop/files/OFERAMehlwurmFarmSetHauptbild.jpg" cta="Zum Produkt" url="/products/mehlwurm-farm-komplettset-spar-bundle"]
+    - Benefit 1
+    - Benefit 2
+    - Benefit 3
+  [/product-card]
+[/product-grid]
+
+---
+
+## 06 · Pricing Table
+
+Bis zu 3 Pakete nebeneinander. `cols="2"` oder `cols="3"`. Typ `shop` oder `digital`. Ein Tier kann mit `highlight="true"` hervorgehoben werden. Bilder können pro Tier optional ergänzt werden.
+
+[pricing-table cols="3" type="digital"]
+  [pricing-tier tier="BASIC" price="29€" label="Paket" price-note="einmalig" image="https://static-media.hotmart.com/XK0V9edvwyz5CF1RWbNihHze9LI=/848x478/https://uploads.teachablecdn.com/attachments/45ac57661d3d4a648a4807acd34f5458.png" cta="Zum Kurs" url="https://learn.ofera.at/purchase?product_id=6349896"]
+    - Inhalt 1
+    - Inhalt 2
+    - Inhalt 3
+  [/pricing-tier]
+
+  [pricing-tier tier="PLUS" price="49€" label="Paket" price-note="einmalig" highlight="true" badge="Sehr Beliebt" image="https://static-media.hotmart.com/XK0V9edvwyz5CF1RWbNihHze9LI=/848x478/https://uploads.teachablecdn.com/attachments/45ac57661d3d4a648a4807acd34f5458.png" cta="Zum Kurs" url="https://learn.ofera.at/purchase?product_id=6349898"]
+    - Inhalt 1
+    - Inhalt 2
+    - Inhalt 3
+  [/pricing-tier]
+
+  [pricing-tier tier="COMPLETE" price="69€" label="Paket" price-note="einmalig" image="https://static-media.hotmart.com/XK0V9edvwyz5CF1RWbNihHze9LI=/848x478/https://uploads.teachablecdn.com/attachments/45ac57661d3d4a648a4807acd34f5458.png" cta="Zum Kurs" url="https://learn.ofera.at/purchase?product_id=6349899"]
+    - Inhalt 1
+    - Inhalt 2
+    - Inhalt 3
+  [/pricing-tier]
+[/pricing-table]
+
+[pricing-table cols="2" type="shop"]
+  [pricing-tier tier="Mehlwurm Farm – ohne rollbarem Sockel" price="199,99€" label="Variante" image="https://t90gtlir2q849lj7-57762840770.shopifypreview.com/cdn/shop/files/ofera-mehlwurm-farm-mit-anleitung.png" cta="Zum Produkt" url="/products/mehlwurm-farm?variant=40372748026050"]
+    - Feature 1
+    - Feature 2
+    - Feature 3
+  [/pricing-tier]
+
+  [pricing-tier tier="Mehlwurme Farm – inkl. rollbarem Sockel" price="249,99€" label="Variante" highlight="true" badge="Sehr beliebt" image="https://t90gtlir2q849lj7-57762840770.shopifypreview.com/cdn/shop/files/ofera-mehlwurm-farm-mit-anleitung-und-rollbarem-sockel.png" cta="Zum Produkt" url="/products/mehlwurm-farm?variant=40372748058818"]
+    - Feature 1
+    - Feature 2
+    - Feature 3
+  [/pricing-tier]
+[/pricing-table]
+
+---
+
+## 07 · Bild
+
+Responsive Einzelbild. Größen: `full` (Standard, volle Breite), `medium` (500px), `small` (300px).
+
+[image src="https://cdn.shopify.com/s/files/1/0577/6284/0770/files/OFERA_Social_Sharing.jpg?v=1750767658" alt="OFERA Cycle-Farming als Grafik" title="Das OFERA Cycle-Farming Prinzip" caption="Ein geschlossener Kreislauf" size="full"]
+
+---
+
+## 08 · Bildreihe
+
+Zwei oder drei Bilder nebeneinander. `cols="2"` oder `cols="3"`.
+
+[image-row cols="3"]
+  [image src="https://ofera.at/cdn/shop/files/Ofera_CS_Aquaponik_800x800_WEB.jpg" alt="OFERA Cycle-Section Aquaponik" title="Fisch & Gemüse aus einem Öko-Kreislauf" caption="Werde zum Aquaponiker und versorge dich und deine Familie mit hochwertigem Fisch und Gemüse aus eigener Produktion. Füttere deine Fische mit eigenen Insekten."]
+  [image src="https://ofera.at/cdn/shop/files/Ofera_CS_Insekten_800x800_e5c725f7-e7d0-4ab7-b0aa-439420786dd2.jpg" alt="OFERA Cycle-Section Insektenzucht" title="Upcycling von Küchenabfällen mit der Zucht von Insekten" caption="Mehlwürmer oder Soldatenfliegenlarven? Mit der Zucht von Insekten schützt du unser Klima und verwandelst Küchenabfälle in hochwertiges Protein."]
+  [image src="https://ofera.at/cdn/shop/files/Ofera_CS_Gemuesegarten_800x800_1a5d509b-89a2-4b73-81fc-e3290524e93b.jpg" alt="Zuchtbox außen" title="Garteln und Kompostieren wie ein echter Profi" caption="Profitiere von deinem eigenen, gesunden Gemüse und kompostiere deine Abfälle aus der Küche um hochwertigen Humus zu erhalten."]
+[/image-row]
+
+---
+
+## 09 · Video
+
+YouTube-Link wird automatisch als responsives 16:9-Embed eingebettet.
+
+[video url="https://youtu.be/K6_q-6_jsog" title="Cycle-Farming erklärt" caption="Stefan, Gründer von OFERA erklärt Cycle-Farming"]
+
+---
+
+## 10 · Editorial Card
+
+Narrative Empfehlungskarte. Alle Felder optional außer Titel. Body Text unterstützt Markdown. Typ `shop` oder `digital`.
+
+[editorial type="shop" badge="TIPP" title="Komposterde sieben leicht gemacht" subtitle="Siebe Erde und Kompost schnell, sauber und flexibel – dank wechselbarer 6 mm & 12 mm Maschenweite" image="https://t90gtlir2q849lj7-57762840770.shopifypreview.com/cdn/shop/files/Erde-sieben-mit-Gartensieb-Erdsieb.png?v=1772363362&width=1080" social-proof="⭐⭐⭐⭐⭐ 4.9 · 30 Bewertungen · Zuletzt aktualisiert März 2025" price="29,90 €" price-note="schnelle, unkomplizierte Lieferung " cta="Jetzt starten" url="/products/gartensieb-mit-6mm-12mm-maschenweite"]
+Dieses Gartensieb ist ideal zum Erde sieben, Kompost verfeinern oder zum Waschen von Aquaponik Grow Media. Dank zwei einfach tauschbarer Siebeinsätze mit 6 mm und 12 mm Maschenweite kannst du die Maschenweite des Siebs flexibel anpassen und den Feinheitsgrad je nach Anwendung bestimmen.
+[/editorial]
+
+[editorial type="digital" badge="Online-Kurs" title="Futterkosten um bis zu 60% senken" subtitle="Schritt-für-Schritt: Zuchtbox bauen, einrichten und erste Ernte in 3 Wochen." image="https://static-media.hotmart.com/XK0V9edvwyz5CF1RWbNihHze9LI=/848x478/https://uploads.teachablecdn.com/attachments/45ac57661d3d4a648a4807acd34f5458.png" social-proof="⭐ 4.9 · 347 Lernende · Zuletzt aktualisiert März 2025" price="ab 29 €" price-note="einmalig · sofortiger Zugang" cta="Jetzt starten" url="/products/black-soldier-fly-zuchtbox-diy-tutorial"]
+Spare Futterkosten und lerne wie du deine eigene Black Soldier Fly Zuchtbox für Soldatenfliegen und Soldatenfliegenlarven selber bauen kannst. Mit den Larven der schwarzen Soldatenfliege kannst du deine Hühner, Vögel, Fische, Reptilien und andere Tiere effizient und nachhaltig füttern.
+[/editorial]
+
+---
+
+## 11 · Tabelle
+
+Standard-Markdown-Tabellen. Werden auf Mobilgeräten automatisch vertikal gestapelt.
+
+### Standard
+| Pumpentyp | Leistung | Kapazität | Empfehlung |
+|-----------|----------|-----------|------------|
+| AP-60 | 38 W | 73 ltr/min | Bis 500L Becken |
+| AP-100 | 65 W | 106 ltr/min | Bis 1.000L Becken |
+| AP-150 | 90 W | 155 ltr/min | [3-IBC Anlage](#) |
+
+### Mit Zeilenbeschriftung (erste Spalte grün)
+Für Matrix-Ansichten mit Zeilenbeschriftungen. Erste Spalte leer lassen (kein Spaltenüberschriften-Text). Im Modal: Checkbox „Erste Spalte als Zeilenbeschriftung" aktivieren.
+
+[table row-headers]
+|  | Mehlwurm Farm | Komplettset |
+|--|---------------|-------------|
+| Preis | 199,99 € | 249,99 € |
+| Lieferzeit | 2–3 Tage | 2–3 Tage |
+| Rollbarer Sockel | – | ✓ |
+[/table]
